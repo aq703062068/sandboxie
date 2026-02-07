@@ -712,7 +712,7 @@ bool CNtObjectModel::hasChildren(const QModelIndex &parent) const
 	return CTreeItemModel::hasChildren(parent);
 }
 
-int CNtObjectModel::columnCount(const QModelIndex &parent) const
+int CNtObjectModel::columnCount(const QModelIndex & /*parent*/) const
 {
 	return eCount;
 }

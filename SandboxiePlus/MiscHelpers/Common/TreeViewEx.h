@@ -8,61 +8,61 @@ __inline uint qHash( const QVariant & var )
         //return -1;
         Q_ASSERT(0);
 
-    switch ( var.type() )
+    switch ( var.typeId() )
     {
-        case QVariant::Int:
+        case QMetaType::Int:
                 return qHash( var.toInt() );
             break;
-        case QVariant::UInt:
+        case QMetaType::UInt:
                 return qHash( var.toUInt() );
             break;
-        case QVariant::Bool:
+        case QMetaType::Bool:
                 return qHash( var.toUInt() );
             break;
-        case QVariant::Double:
+        case QMetaType::Double:
                 return qHash( var.toUInt() );
             break;
-        case QVariant::LongLong:
+        case QMetaType::LongLong:
                 return qHash( var.toLongLong() );
             break;
-        case QVariant::ULongLong:
+        case QMetaType::ULongLong:
                 return qHash( var.toULongLong() );
             break;
-        case QVariant::String:
+        case QMetaType::QString:
                 return qHash( var.toString() );
             break;
-        case QVariant::Char:
+        case QMetaType::QChar:
                 return qHash( var.toChar() );
             break;
-        case QVariant::StringList:
+        case QMetaType::QStringList:
                 return qHash( var.toString() );
             break;
-        case QVariant::ByteArray:
+        case QMetaType::QByteArray:
                 return qHash( var.toByteArray() );
             break;
-        case QVariant::Date:
-        case QVariant::Time:
-        case QVariant::DateTime:
-        case QVariant::Url:
-        case QVariant::Locale:
-        //case QVariant::RegExp:
+        case QMetaType::QDate:
+        case QMetaType::QTime:
+        case QMetaType::QDateTime:
+        case QMetaType::QUrl:
+        case QMetaType::QLocale:
+        //case QMetaType::QRegExp:
         //        return qHash( var.toString() );
             break;
-        case QVariant::Map:
-        case QVariant::List:
-        case QVariant::BitArray:
-        case QVariant::Size:
-        case QVariant::SizeF:
-        case QVariant::Rect:
-        case QVariant::LineF:
-        case QVariant::Line:
-        case QVariant::RectF:
-        case QVariant::Point:
-        case QVariant::PointF:
+        case QMetaType::QVariantMap:
+        case QMetaType::QVariantList:
+        case QMetaType::QBitArray:
+        case QMetaType::QSize:
+        case QMetaType::QSizeF:
+        case QMetaType::QRect:
+        case QMetaType::QLineF:
+        case QMetaType::QLine:
+        case QMetaType::QRectF:
+        case QMetaType::QPoint:
+        case QMetaType::QPointF:
             // not supported yet
             break;
-        case QVariant::UserType:
-        case QVariant::Invalid:
+        case QMetaType::User:
+        case QMetaType::UnknownType:
         default:
             return -1;
     }
@@ -249,7 +249,7 @@ public slots:
 	}
 
 private slots:
-	void OnMenuRequested(const QPoint &point)
+	void OnMenuRequested(const QPoint & /*point*/)
 	{
 		QAbstractItemModel* pModel = model();
 
@@ -332,7 +332,7 @@ class MISCHELPERS_EXPORT CStyledGridItemDelegate : public QStyledItemDelegateMax
 public:
 	explicit CStyledGridItemDelegate(int MaxHeight, QObject * parent = 0) : CStyledGridItemDelegate(MaxHeight, false, parent) { }
 	explicit CStyledGridItemDelegate(int MaxHeight, QColor Color, QObject * parent = 0) : CStyledGridItemDelegate(MaxHeight, Color, false, parent) { }
-	explicit CStyledGridItemDelegate(int MaxHeight, bool Tree, QObject * parent = 0) : CStyledGridItemDelegate(MaxHeight, QColor(Qt::darkGray), false, parent) { }
+	explicit CStyledGridItemDelegate(int MaxHeight, bool /*Tree*/, QObject * parent = 0) : CStyledGridItemDelegate(MaxHeight, QColor(Qt::darkGray), false, parent) { }
 	explicit CStyledGridItemDelegate(int MaxHeight, QColor Color, bool Tree, QObject * parent = 0) : QStyledItemDelegateMaxH(MaxHeight, parent) { 
 		m_Color = Color;  
 		m_Tree = Tree; 

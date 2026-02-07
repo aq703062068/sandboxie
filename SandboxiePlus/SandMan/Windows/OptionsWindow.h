@@ -88,7 +88,7 @@ private slots:
 	void OnAddProg();
 	void OnDelProg();
 	void OnShowGroupTmpl()			{ LoadGroupsTmpl(true); }
-	void OnGroupsChanged(QTreeWidgetItem* pItem, int Index) { m_GroupsChanged = true;  OnOptChanged(); }
+	void OnGroupsChanged(QTreeWidgetItem* /*pItem*/, int /*Index*/) { m_GroupsChanged = true;  OnOptChanged(); }
 
 	void OnForceProg();
 	void OnForceBrowseProg();
@@ -147,7 +147,7 @@ private slots:
 
 	void OnAddDnsFilter();
 	void OnDelDnsFilter();
-	void OnDnsFilterChanged(QTreeWidgetItem * pItem, int Column) { m_DnsFilterChanged = true; OnOptChanged(); }
+	void OnDnsFilterChanged(QTreeWidgetItem * /*pItem*/, int /*Column*/) { m_DnsFilterChanged = true; OnOptChanged(); }
 
 	void OnNetProxyItemDoubleClicked(QTreeWidgetItem* pItem, int Column);
 	void OnNetProxySelectionChanged() { CloseNetProxyEdit(); OnOptChanged(); }
@@ -157,7 +157,7 @@ private slots:
 	void OnProxyResolveHostnames();
 	void OnNetProxyMoveUp();
 	void OnNetProxyMoveDown();
-	void OnNetProxyChanged(QTreeWidgetItem * pItem, int Column) { m_NetProxyChanged = true; OnOptChanged(); }
+	void OnNetProxyChanged(QTreeWidgetItem * /*pItem*/, int /*Column*/) { m_NetProxyChanged = true; OnOptChanged(); }
 
 	void OnBlockDns();
 	void OnBlockSamba();

@@ -265,7 +265,7 @@ public:
 	}
 
 protected:
-	void mouseDoubleClickEvent (QMouseEvent * e)
+	void mouseDoubleClickEvent (QMouseEvent * /*e*/)
 	{
 		if(QApplication::keyboardModifiers() & Qt::ControlModifier)
 			setTristate();
@@ -330,7 +330,7 @@ class MISCHELPERS_EXPORT CActionWidget: public QWidget
 public:
 	CActionWidget(QWidget* parent = 0) : QWidget(parent) {}
 
-	void paintEvent(QPaintEvent* e)
+	void paintEvent(QPaintEvent* /*e*/)
 	{
 		QPainter p(this);
 
@@ -390,7 +390,7 @@ public:
 		view()->viewport()->installEventFilter(this);
 	}
 
-	virtual bool eventFilter(QObject *watched, QEvent *e)
+	virtual bool eventFilter(QObject * /*watched*/, QEvent *e)
 	{
 		switch (e->type())
 		{
@@ -400,7 +400,7 @@ public:
 			QMouseEvent *m = static_cast<QMouseEvent *>(e);
 
 			// is check box rect pressed
-			if (m->localPos().x() < this->height()) 
+			if (m->position().x() < this->height()) 
 			{
 				QStandardItemModel *model_ = qobject_cast<QStandardItemModel *>(model());
 				Qt::CheckState state = model_->data(view()->currentIndex(), Qt::CheckStateRole).value<Qt::CheckState>();
