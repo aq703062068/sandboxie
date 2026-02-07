@@ -320,7 +320,7 @@ void CSandMan::CreateBoxMenu(QMenu* pMenu, int iOffset, int iSysTrayFilter)
 
 void CSandMan::OnBoxMenuHover(QAction* action)
 {
-	if (action->data().type() != QVariant::String)
+	if (action->data().typeId() != QMetaType::QString)
 		return;
 	QString Str = action->data().toString();
 	if (Str.left(4) != "box:")

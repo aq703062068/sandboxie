@@ -226,7 +226,7 @@ void COptionsWindow::OnOpenTemplate()
 
 void COptionsWindow::OnDelTemplates()
 {
-	if (QMessageBox("Sandboxie-Plus", tr("Do you really want to delete the selected local template(s)?"), QMessageBox::Question, QMessageBox::Yes, QMessageBox::No | QMessageBox::Default | QMessageBox::Escape, QMessageBox::NoButton, this).exec() != QMessageBox::Yes)
+	if (QMessageBox::question(this, "Sandboxie-Plus", tr("Do you really want to delete the selected local template(s)?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) != QMessageBox::Yes)
 		return;
 
 	foreach(QTreeWidgetItem * pItem, ui.treeTemplates->selectedItems())

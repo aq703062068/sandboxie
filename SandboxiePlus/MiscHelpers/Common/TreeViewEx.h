@@ -2,7 +2,7 @@
 
 #include <QStyledItemDelegate>
 
-__inline uint qHash( const QVariant & var )
+__inline size_t qHash( const QVariant & var )
 {
     if ( !var.isValid() /*|| var.isNull()*/ )
         //return -1;

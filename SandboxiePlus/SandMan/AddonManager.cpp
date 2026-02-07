@@ -152,8 +152,8 @@ CAddonPtr CAddonManager::GetAddon(const QString& Id, EState State)
 
 SB_PROGRESS CAddonManager::TryInstallAddon(const QString& Id, QWidget* pParent, const QString& Prompt)
 {
-	if (QMessageBox("Sandboxie-Plus", Prompt.isEmpty() ? tr("Do you want to download and install %1?").arg(Id) : Prompt,
-	  QMessageBox::Question, QMessageBox::Yes | QMessageBox::Default, QMessageBox::No | QMessageBox::Escape, QMessageBox::NoButton, pParent ? pParent : theGUI).exec() != QMessageBox::Yes)
+	if (QMessageBox::question(pParent ? pParent : theGUI, "Sandboxie-Plus", Prompt.isEmpty() ? tr("Do you want to download and install %1?").arg(Id) : Prompt,
+	  QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) != QMessageBox::Yes)
 		return SB_ERR(SB_OtherError);
 
 	SB_PROGRESS Status = InstallAddon(Id);
@@ -166,8 +166,8 @@ SB_PROGRESS CAddonManager::TryInstallAddon(const QString& Id, QWidget* pParent, 
 
 SB_PROGRESS CAddonManager::TryRemoveAddon(const QString& Id, QWidget* pParent)
 {
-	if (QMessageBox("Sandboxie-Plus", tr("Do you want to remove %1?").arg(Id),
-	  QMessageBox::Question, QMessageBox::Yes | QMessageBox::Default, QMessageBox::No | QMessageBox::Escape, QMessageBox::NoButton, pParent ? pParent : theGUI).exec() != QMessageBox::Yes)
+	if (QMessageBox::question(pParent ? pParent : theGUI, "Sandboxie-Plus", tr("Do you want to remove %1?").arg(Id),
+	  QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) != QMessageBox::Yes)
 		return SB_ERR(SB_OtherError);
 
 	SB_PROGRESS Status = RemoveAddon(Id);

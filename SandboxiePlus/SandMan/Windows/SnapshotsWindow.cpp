@@ -84,7 +84,7 @@ CSnapshotsWindow::~CSnapshotsWindow()
 	theConf->SetBlob("SnapshotsWindow/Window_Geometry",saveGeometry());
 }
 
-void CSnapshotsWindow::closeEvent(QCloseEvent *e)
+void CSnapshotsWindow::closeEvent(QCloseEvent * /*e*/)
 {
 	emit Closed();
 	this->deleteLater();
@@ -206,7 +206,7 @@ void CSnapshotsWindow::OnSelectEmpty()
 
 void CSnapshotsWindow::SelectSnapshot(const QString& ID)
 {
-	if (QMessageBox("Sandboxie-Plus", tr("Do you really want to switch the active snapshot? Doing so will delete the current state!"), QMessageBox::Question, QMessageBox::Yes, QMessageBox::No | QMessageBox::Default | QMessageBox::Escape, QMessageBox::NoButton, this).exec() != QMessageBox::Yes)
+	if (QMessageBox::question(this, "Sandboxie-Plus", tr("Do you really want to switch the active snapshot? Doing so will delete the current state!"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) != QMessageBox::Yes)
 		return;
 
 	HandleResult(m_pBox->SelectSnapshot(ID));
@@ -240,7 +240,7 @@ void CSnapshotsWindow::OnRemoveSnapshot()
 {
 	QVariant ID = GetCurrentItem();
 
-	if (QMessageBox("Sandboxie-Plus", tr("Do you really want to delete the selected snapshot?"), QMessageBox::Question, QMessageBox::Yes, QMessageBox::No | QMessageBox::Default | QMessageBox::Escape, QMessageBox::NoButton, this).exec() != QMessageBox::Yes)
+	if (QMessageBox::question(this, "Sandboxie-Plus", tr("Do you really want to delete the selected snapshot?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) != QMessageBox::Yes)
 		return;
 
 	ui.groupBox->setEnabled(false);

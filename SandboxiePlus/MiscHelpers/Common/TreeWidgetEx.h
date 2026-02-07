@@ -74,7 +74,7 @@ public slots:
 	}
 
 private slots:
-	void OnMenuRequested(const QPoint &point)
+	void OnMenuRequested(const QPoint & /*point*/)
 	{
 		if(m_pMenu->actions().isEmpty())
 		{

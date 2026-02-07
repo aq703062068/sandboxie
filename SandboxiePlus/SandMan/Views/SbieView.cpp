@@ -572,13 +572,13 @@ void CSbieView::Refresh()
 	if (!Added.isEmpty()) {
 		bool bChanged = false;
 		foreach(const QVariant& ID, Added) {
-			if (ID.type() == QVariant::String) {
-				QString id = ID.toString();
-				if (id.left(1) != "!") {
-					bChanged = true;
-					m_Groups[""].append(id);
-				}
+		if (ID.typeId() == QMetaType::QString) {
+			QString id = ID.toString();
+			if (id.left(1) != "!") {
+				bChanged = true;
+				m_Groups[""].append(id);
 			}
+		}
 		}
 
 		if(bChanged)
@@ -588,7 +588,7 @@ void CSbieView::Refresh()
 
 void CSbieView::OnToolTipCallback(const QVariant& ID, QString& ToolTip)
 {
-	if (ID.type() == QVariant::String)
+	if (ID.typeId() == QMetaType::QString)
 	{
 		QString BoxName = ID.toString();
 		CSandBoxPtr pBox = theAPI->GetBoxByName(BoxName);
@@ -1071,7 +1071,7 @@ void CSbieView::OnGroupAction(QAction* Action)
 	}
 	else if (Action == m_pDelGroupe)
 	{
-		if (QMessageBox("Sandboxie-Plus", tr("Do you really want to remove the selected group(s)?"), QMessageBox::Question, QMessageBox::Yes, QMessageBox::No | QMessageBox::Default | QMessageBox::Escape, QMessageBox::NoButton, this).exec() != QMessageBox::Yes)
+		if (QMessageBox::question(this, "Sandboxie-Plus", tr("Do you really want to remove the selected group(s)?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) != QMessageBox::Yes)
 			return;
 
 		foreach(const QModelIndex& Index, m_pSbieTree->selectedRows())
@@ -1183,7 +1183,7 @@ void CSbieView::OnMoveTo(const QString& Group)
 	foreach(const QString& Name, GetSelectedGroups(true))
 	{
 		if (Name == Group || IsParentOf(Name, Group)) {
-			QMessageBox("Sandboxie-Plus", tr("A group can not be its own parent."), QMessageBox::Critical, QMessageBox::Ok, QMessageBox::NoButton, QMessageBox::NoButton, this).exec();
+			QMessageBox::critical(this, "Sandboxie-Plus", tr("A group can not be its own parent."));
 			continue;
 		}
 
@@ -1410,7 +1410,7 @@ void CSbieView::OnSandBoxAction(QAction* Action, const QList<CSandBoxPtr>& SandB
 	else if (Action == m_pMenuExplore)
 	{
 		if (SandBoxes.first()->IsEmpty()) {
-			QMessageBox("Sandboxie-Plus", tr("This Sandbox is empty."), QMessageBox::Information, QMessageBox::Ok, QMessageBox::NoButton, QMessageBox::NoButton, this).exec();
+			QMessageBox::information(this, "Sandboxie-Plus", tr("This Sandbox is empty."));
 			return;
 		}
 
@@ -1430,7 +1430,7 @@ void CSbieView::OnSandBoxAction(QAction* Action, const QList<CSandBoxPtr>& SandB
 	else if (Action == m_pMenuRegEdit)
 	{
 		if (SandBoxes.first()->IsEmpty()) {
-			QMessageBox("Sandboxie-Plus", tr("This Sandbox is empty."), QMessageBox::Information, QMessageBox::Ok, QMessageBox::NoButton, QMessageBox::NoButton, this).exec();
+			QMessageBox::information(this, "Sandboxie-Plus", tr("This Sandbox is empty."));
 			return;
 		}
 
@@ -1595,7 +1595,7 @@ void CSbieView::OnSandBoxAction(QAction* Action, const QList<CSandBoxPtr>& SandB
 	{
 		QString message = tr("Do you really want to remove the following sandbox(es)?<br /><br />%1<br /><br />Warning: The box content will also be deleted!")
 			.arg(RenderSandboxNameList_(SandBoxes));
-		if (QMessageBox("Sandboxie-Plus", message, QMessageBox::Warning, QMessageBox::Yes, QMessageBox::No | QMessageBox::Default | QMessageBox::Escape, QMessageBox::NoButton, this).exec() != QMessageBox::Yes)
+		if (QMessageBox::warning(this, "Sandboxie-Plus", message, QMessageBox::Yes | QMessageBox::No, QMessageBox::No) != QMessageBox::Yes)
 			return;
 
 		bool bChanged = false;
@@ -1646,7 +1646,7 @@ void CSbieView::OnSandBoxAction(QAction* Action, const QList<CSandBoxPtr>& SandB
 		if (SandBoxes.count() == 1)
 		{
 			if (SandBoxes.first()->IsEmpty()) {
-				QMessageBox("Sandboxie-Plus", tr("This Sandbox is already empty."), QMessageBox::Information, QMessageBox::Ok, QMessageBox::NoButton, QMessageBox::NoButton, this).exec();
+				QMessageBox::information(this, "Sandboxie-Plus", tr("This Sandbox is already empty."));
 				return;
 			}
 
@@ -1862,7 +1862,7 @@ void CSbieView::OnProcessAction(QAction* Action, const QList<CBoxedProcessPtr>& 
 		{
 			if (!pProcess.objectCast<CSbieProcess>()->GetBox()->IsINetBlocked())
 			{
-				if (QMessageBox("Sandboxie-Plus", tr("This box does not have Internet restrictions in place, do you want to enable them?"), QMessageBox::Question, QMessageBox::Yes, QMessageBox::No | QMessageBox::Default | QMessageBox::Escape, QMessageBox::NoButton, this).exec() != QMessageBox::Yes)
+				if (QMessageBox::question(this, "Sandboxie-Plus", tr("This box does not have Internet restrictions in place, do you want to enable them?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) != QMessageBox::Yes)
 					return;
 				pProcess.objectCast<CSbieProcess>()->GetBox()->SetINetBlock(true);
 			}
@@ -1903,7 +1903,7 @@ void CSbieView::ShowOptions(const CSandBoxPtr& pBox)
 void CSbieView::ShowBrowse(const CSandBoxPtr& pBox)
 {
 	if (pBox->IsEmpty()) {
-		QMessageBox("Sandboxie-Plus", tr("This Sandbox is empty."), QMessageBox::Information, QMessageBox::Ok, QMessageBox::NoButton, QMessageBox::NoButton, this).exec();
+		QMessageBox::information(this, "Sandboxie-Plus", tr("This Sandbox is empty."));
 		return;
 	}
 
@@ -1953,7 +1953,7 @@ void CSbieView::OnDoubleClicked(const CSandBoxPtr &pBox)
 
 	if (!pBox->IsEnabled())
 	{
-		if (QMessageBox("Sandboxie-Plus", tr("This sandbox is currently disabled or restricted to specific groups or users. Would you like to allow access for everyone?"), QMessageBox::Question, QMessageBox::Yes, QMessageBox::No | QMessageBox::Default | QMessageBox::Escape, QMessageBox::NoButton, this).exec() != QMessageBox::Yes)
+		if (QMessageBox::question(this, "Sandboxie-Plus", tr("This sandbox is currently disabled or restricted to specific groups or users. Would you like to allow access for everyone?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) != QMessageBox::Yes)
 			pBox->SetText("Enabled", "y");// Fix #3999
 	}
 

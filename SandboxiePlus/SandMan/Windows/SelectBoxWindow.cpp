@@ -250,7 +250,7 @@ void CSelectBoxWindow::OnRun()
 		Flags |= CSbieAPI::eStartElevated;
 	if (ui.radUnBoxed->isChecked())
 	{
-		if (QMessageBox("Sandboxie-Plus", tr("Are you sure you want to run the program outside the sandbox?"), QMessageBox::Question, QMessageBox::Yes, QMessageBox::No | QMessageBox::Default | QMessageBox::Escape, QMessageBox::NoButton, this).exec() != QMessageBox::Yes)
+		if (QMessageBox::question(this, "Sandboxie-Plus", tr("Are you sure you want to run the program outside the sandbox?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) != QMessageBox::Yes)
 			return;
 
 		BoxNames.append("");
@@ -270,7 +270,7 @@ void CSelectBoxWindow::OnRun()
 			Flags |= CSbieAPI::eStartFCP;
 		BoxNames = m_pBoxPicker->GetBoxNames();
 		if (BoxNames.isEmpty()) {
-			QMessageBox("Sandboxie-Plus", tr("Please select a sandbox."), QMessageBox::Information, QMessageBox::Ok, QMessageBox::NoButton, QMessageBox::NoButton, this).exec();
+			QMessageBox::information(this, "Sandboxie-Plus", tr("Please select a sandbox."));
 			return;
 		}
 	}

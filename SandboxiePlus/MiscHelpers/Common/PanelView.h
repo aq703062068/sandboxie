@@ -136,7 +136,7 @@ public:
 	CFinder* GetFinder() { return m_pFinder; }
 
 private slots:
-	void SetFilter(const QRegularExpression& RegExp, int iOptions, int Col = -1) // -1 = any
+	void SetFilter(const QRegularExpression& RegExp, int /*iOptions*/, int /*Col*/ = -1) // -1 = any
 	{
 		ApplyFilter(m_pTreeList, &RegExp);
 	}
@@ -207,7 +207,7 @@ signals:
 	void						SelectionChanged();
 
 protected slots:
-	virtual void				OnDoubleClicked(const QModelIndex& Index) {}
+	virtual void				OnDoubleClicked(const QModelIndex& /*Index*/) {}
 	virtual void				OnCurrentChanged(const QModelIndex& current, const QModelIndex& previous) = 0;
 	virtual void				OnSelectionChanged(const QItemSelection& Selected, const QItemSelection& Deselected) = 0;
 };

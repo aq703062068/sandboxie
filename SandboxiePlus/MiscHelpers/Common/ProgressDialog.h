@@ -72,7 +72,7 @@ public slots:
 		}
 	}
 
-	void		OnStatusMessage(const QString& Message, int Code = 0)
+	void		OnStatusMessage(const QString& Message, int /*Code*/ = 0)
 	{
 		//if(Code == 0)
 			m_pMessageLabel->setText(Message);
@@ -104,7 +104,7 @@ protected:
 		}
 	}
 
-	void closeEvent(QCloseEvent *e)
+	void closeEvent(QCloseEvent * /*e*/)
 	{
 		emit Cancel();
 	}

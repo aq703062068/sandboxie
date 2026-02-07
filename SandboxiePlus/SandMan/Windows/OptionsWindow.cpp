@@ -1276,8 +1276,8 @@ void COptionsWindow::reject()
 	 || m_RecoveryChanged
 	 || m_AdvancedChanged)
 	{
-		if (QMessageBox("Sandboxie-Plus", tr("Some changes haven't been saved yet, do you really want to close this options window?")
-		, QMessageBox::Warning, QMessageBox::Yes | QMessageBox::Default, QMessageBox::No | QMessageBox::Escape, QMessageBox::NoButton, this).exec() != QMessageBox::Yes)
+		if (QMessageBox::warning(this, "Sandboxie-Plus", tr("Some changes haven't been saved yet, do you really want to close this options window?"),
+			QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) != QMessageBox::Yes)
 			return;
 	}
 

@@ -444,7 +444,7 @@ bool COnlineUpdater::ShowCertWarningIfNeeded()
 
 	QString Message = tr("Your Sandboxie-Plus supporter certificate is expired, however for the current build you are using it remains active, when you update to a newer build exclusive supporter features will be disabled.\n\n"
 		"Do you still want to update?");
-	int Ret = QMessageBox("Sandboxie-Plus", Message, QMessageBox::Warning, QMessageBox::Yes, QMessageBox::No | QMessageBox::Escape | QMessageBox::Default, QMessageBox::Cancel, theGUI).exec();
+	int Ret = QMessageBox::warning(theGUI, "Sandboxie-Plus", Message, QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::No);
 	if (Ret == QMessageBox::Cancel) {
 		QTimer::singleShot(10, this, [=] {
 			theConf->DelValue("Updater/InstallerPath");
@@ -959,7 +959,7 @@ bool COnlineUpdater::ApplyUpdate(EUpdateScope Scope, bool bSilent)
 		if (!bSilent)
 		{
 			QString Message = tr("<p>Updates for Sandboxie-Plus have been downloaded.</p><p>Do you want to apply these updates? If any programs are running sandboxed, they will be terminated.</p>");
-			int Ret = QMessageBox("Sandboxie-Plus", Message, QMessageBox::Information, QMessageBox::Yes | QMessageBox::Default, QMessageBox::No | QMessageBox::Escape, QMessageBox::Cancel, theGUI).exec();
+			int Ret = QMessageBox::information(theGUI, "Sandboxie-Plus", Message, QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes);
 			if (Ret == QMessageBox::Cancel) {
 				theConf->DelValue("Updater/UpdateVersion");
 				theGUI->UpdateLabel();
@@ -1108,7 +1108,7 @@ bool COnlineUpdater::RunInstaller(bool bSilent)
 	if (!bSilent) {
 		QString Message = tr("<p>A new Sandboxie-Plus installer has been downloaded to the following location:</p><p><a href=\"%2\">%1</a></p><p>Do you want to begin the installation? If any programs are running sandboxed, they will be terminated.</p>")
 			.arg(FilePath).arg("File:///" + Split2(FilePath, "/", true).first);
-		int Ret = QMessageBox("Sandboxie-Plus", Message, QMessageBox::Information, QMessageBox::Yes | QMessageBox::Default, QMessageBox::No | QMessageBox::Escape, QMessageBox::Cancel, theGUI).exec();
+		int Ret = QMessageBox::information(theGUI, "Sandboxie-Plus", Message, QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes);
 		if (Ret == QMessageBox::Cancel) {
 			QFile::remove(FilePath);
 			QFile::remove(FilePath + ".sig");

@@ -3826,8 +3826,8 @@ void CSandMan::RebuildUI()
 
 void CSandMan::OnResetMsgs()
 {
-	auto Ret = QMessageBox("Sandboxie-Plus", tr("Do you also want to reset hidden message boxes (yes), or only all log messages (no)?"),
-		QMessageBox::Question, QMessageBox::Yes | QMessageBox::Default, QMessageBox::No, QMessageBox::Cancel | QMessageBox::Escape, this).exec();
+	auto Ret = QMessageBox::question(this, "Sandboxie-Plus", tr("Do you also want to reset hidden message boxes (yes), or only all log messages (no)?"),
+		QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes);
 	if (Ret == QMessageBox::Cancel)
 		return;
 
@@ -4649,7 +4649,7 @@ void ScanForSeats()
 int CountSeats()
 {
 	std::lock_guard<std::mutex> lock(g_CertUsersLock);
-	return g_CertUsers.size();
+	return (int)g_CertUsers.size();
 }
 
 DWORD WINAPI MailThreadFunc(LPVOID lpParam)

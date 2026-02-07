@@ -611,15 +611,15 @@ void SetPaleteTexture(QPalette& palette, QPalette::ColorRole role, const QImage&
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 bool operator < (const QVariant& l, const QVariant& r)
 {
-	auto lt = l.type();
+	auto lt = l.typeId();
 	//auto lv = l.isValid();
 	//auto ln = l.isNull();
-	auto rt = r.type();
+	auto rt = r.typeId();
 	//auto rv = r.isValid();
 	//auto rn = r.isNull();
 	if(lt != rt)
 		return lt < rt;
-	if (lt == QVariant::List)
+	if (lt == QMetaType::QVariantList)
 	{
 		auto lList = l.toList();
 		auto rList = r.toList();

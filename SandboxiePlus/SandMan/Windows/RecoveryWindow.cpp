@@ -268,7 +268,7 @@ void CRecoveryWindow::OnDeleteEverything()
 	OnDeleteAll();
 }
 
-void CRecoveryWindow::AddFile(const QString& FilePath, const QString& BoxPath)
+void CRecoveryWindow::AddFile(const QString& FilePath, const QString& /*BoxPath*/)
 {
 	ui.chkShowAll->setTristate(true);
 	if (m_FileMap.isEmpty()) {
