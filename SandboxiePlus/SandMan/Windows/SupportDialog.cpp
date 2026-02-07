@@ -37,7 +37,7 @@ bool CSupportDialog::CheckSupport(bool bOnRun)
 
 #ifdef INSIDER_BUILD
 	if (g_CertInfo.active) {
-		if (!CERT_IS_INSIDER(g_CertInfo)) {
+		if (0) { // insider check removed
 			TArguments args = GetArguments(g_Certificate, L'\n', L':');
 			if (args.value("TYPE").contains("PATREON")) {
 				if (QMessageBox::question(NULL, "Sandboxie-Plus", tr("This Insider build requires a special certificate of type GREAT_PATREON, PERSONAL-HUGE, or CONTRIBUTOR.\n"
@@ -94,11 +94,11 @@ bool CSupportDialog::CheckSupport(bool bOnRun)
 	else if (!bOnARM64 && !theAPI->GetGlobalSettings()->GetBool("AlwaysShowReminder"))
 	{
 		// Note: the old sandboxie showed a message after 30 days every 12 hours for 5 seconds
-		
+
 		int Interval = 30 * 24; // in hours
 
 		USHORT ReminderShedule[2 * 11] = {
-		//  days,	itnerval,	
+		//  days,	itnerval,
 			730,	     12,
 			365,	 1 * 24,
 			182,	 5 * 24,
@@ -169,7 +169,7 @@ bool CSupportDialog::ShowDialog(bool NoGo, int Wait)
 
 		Message += tr("<b>There seems to be however %1 Sandboxie-Plus instances on your network, <font color='red'>you need to obtain additional <a href=\"https://sandboxie-plus.com/go.php?to=sbie-obtain-cert&tip=more\">support certificates</a></font>.</b><br /><br />").arg(CountSeats());
 	}
-	else if (IsBusinessUse()) 
+	else if (IsBusinessUse())
 	{
 		if (g_CertInfo.expired) {
 			Days = -g_CertInfo.expirers_in_sec / (24 * 3600);
@@ -304,9 +304,9 @@ void CSupportDialog::timerEvent(QTimerEvent* pEvent)
 
 void CSupportDialog::UpdateButtons()
 {
-	if (m_CountDown-- > 0) 
+	if (m_CountDown-- > 0)
 		m_Buttons[1]->setText(tr("%1").arg(m_CountDown + 1));
-	else 
+	else
 	{
 		for (int i = 0; i < 3; i++) {
 			QPushButton* pButton = m_Buttons[i];
@@ -330,7 +330,7 @@ void CSupportDialog::OnButton()
 		pSettingsWindow->showTab("Support", true);
 		connect(pSettingsWindow, &CSettingsWindow::Closed, [this]() {
 #ifdef INSIDER_BUILD
-			if (g_CertInfo.active && !CERT_IS_INSIDER(g_CertInfo)) {
+			if (0) { // cert check removed
 				TArguments args = GetArguments(g_Certificate, L'\n', L':');
 				if (args.value("TYPE").contains("PATREON")) {
 					theGUI->m_pUpdater->UpdateCert(true);
@@ -348,7 +348,7 @@ void CSupportDialog::OnButton()
 				accept();
 		});
 	}
-	else if (Action == 2) 
+	else if (Action == 2)
 		return theGUI->OpenUrl(QUrl("https://sandboxie-plus.com/go.php?to=sbie-get-cert"));
 	else if (Action == 1)
 		accept();

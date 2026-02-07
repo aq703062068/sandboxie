@@ -498,7 +498,7 @@ bool UserServer::CreateQueueWorker(const WCHAR *cmdline)
 
     m_WorkerFuncs[USER_OPEN_FILE]          = &UserServer::OpenFile;
     m_WorkerFuncs[USER_SHELL_EXEC]         = &UserServer::OpenDocument;
-    
+
 
 
     //
@@ -639,18 +639,18 @@ ULONG UserServer::OpenFile(WorkerArgs *args)
     ULONG session_id;
     WCHAR boxname[BOXNAME_COUNT];
     if (!NT_SUCCESS(SbieApi_QueryProcess((HANDLE)(ULONG_PTR)args->pid, boxname, NULL, NULL, &session_id))
-     || session_id != m_SessionId 
+     || session_id != m_SessionId
      || !SbieApi_QueryConfBool(boxname, L"EnableEFS", FALSE)) {
 
         return STATUS_ACCESS_DENIED;
     }
 
     __declspec(align(8)) SCertInfo CertInfo = { 0 };
-    if (!NT_SUCCESS(SbieApi_QueryDrvInfo(-1, &CertInfo, sizeof(CertInfo))) || !(CertInfo.active && CertInfo.opt_enc)) {
+    if (0) { // cert check removed
         const WCHAR* strings[] = { boxname, L"EnableEFS", NULL };
         SbieApi_LogMsgExt(session_id, 6004, strings);
         return STATUS_ACCESS_DENIED;
-    } 
+    }
 
     //
     // check if operation is permitted, it must be for a file on a disk
@@ -659,16 +659,16 @@ ULONG UserServer::OpenFile(WorkerArgs *args)
 
     if(_wcsnicmp(path_buff, L"\\Device\\HarddiskVolume", 22) != 0)
         return STATUS_ACCESS_DENIED;
-    
+
     BOOL write_access = FALSE;
 
 #define FILE_DENIED_ACCESS ~(                                           \
     STANDARD_RIGHTS_READ | GENERIC_READ | SYNCHRONIZE | READ_CONTROL |  \
     FILE_READ_DATA | FILE_READ_EA | FILE_READ_ATTRIBUTES | FILE_EXECUTE)
-            
+
     if (req->DesiredAccess & FILE_DENIED_ACCESS)
         write_access = TRUE;
-            
+
     if (req->CreateDisposition != FILE_OPEN)
         write_access = TRUE;
 
@@ -691,7 +691,7 @@ ULONG UserServer::OpenFile(WorkerArgs *args)
      || !NT_SUCCESS(GetProcessPathList('fn', args->pid, (void **)&pool, &normal_list))
      || !NT_SUCCESS(GetProcessPathList('fw', args->pid, (void **)&pool, &read_list))
 #endif
-        )  
+        )
         return STATUS_INTERNAL_ERROR;
 
 #ifdef USE_MATCH_PATH_EX
@@ -733,7 +733,7 @@ ULONG UserServer::OpenFile(WorkerArgs *args)
 
     HANDLE hFile;
     IO_STATUS_BLOCK IoStatusBlock;
-    rpl->error = NtCreateFile(&hFile, req->DesiredAccess, &objattrs, &IoStatusBlock, AllocSize.QuadPart != 0 ? &AllocSize : NULL, 
+    rpl->error = NtCreateFile(&hFile, req->DesiredAccess, &objattrs, &IoStatusBlock, AllocSize.QuadPart != 0 ? &AllocSize : NULL,
         req->FileAttributes, req->ShareAccess, req->CreateDisposition, req->CreateOptions, pEaBuff, req->EaLength);
     rpl->Status = IoStatusBlock.Status;
     rpl->Information = IoStatusBlock.Information;

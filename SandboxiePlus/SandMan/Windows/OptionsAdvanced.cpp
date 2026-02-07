@@ -77,7 +77,7 @@ void COptionsWindow::CreateAdvanced()
 	m_AdvOptions.insert("KeyRootPath",					SAdvOption{eNoSpec, QStringList(), tr("Sandbox registry root")});
 	m_AdvOptions.insert("IpcRootPath",					SAdvOption{eNoSpec, QStringList(), tr("Sandbox ipc root")});
 
-		
+
 
 	connect(ui.btnAddOption, SIGNAL(clicked(bool)), this, SLOT(OnAddOption()));
 	connect(ui.chkShowOptionsTmpl, SIGNAL(clicked(bool)), this, SLOT(OnShowOptionTmpl()));
@@ -233,7 +233,7 @@ void COptionsWindow::LoadAdvanced()
 		if (!pAddon->Installed)
 			continue;
 		QVariantMap InjectDlls = pAddon->Data["injectDlls"].toMap();
-		if (!InjectDlls.isEmpty()) 
+		if (!InjectDlls.isEmpty())
 		{
 			int Found = 0;
 			int Count = 0;
@@ -274,7 +274,7 @@ void COptionsWindow::LoadAdvanced()
 		}
 	}
 
-	
+
 	ui.chkHostProtect->setChecked(m_pBox->GetBool("ProtectHostImages", false));
 	ui.chkHostProtectMsg->setEnabled(ui.chkHostProtect->isChecked());
 	ui.chkHostProtectMsg->setChecked(m_pBox->GetBool("NotifyImageLoadDenied", true));
@@ -337,7 +337,7 @@ void COptionsWindow::LoadAdvanced()
 
 	ui.chkHideOtherBoxes->setChecked(m_pBox->GetBool("HideOtherBoxes", true));
 	ui.chkHideNonSystemProcesses->setChecked(m_pBox->GetBool("HideNonSystemProcesses", false));
-	
+
 	ui.treeHideProc->clear();
 	foreach(const QString& Value, m_pBox->GetTextList("HideHostProcess", m_Template))
 		AddHiddenProcEntry(Value);
@@ -364,7 +364,7 @@ void COptionsWindow::LoadAdvanced()
 	QString str = m_pBox->GetText("OpenWinClass", "");
 	ui.chkBlockCapture->setChecked(m_pBox->GetBool("BlockScreenCapture") && QString::compare(str, "*") != 0);
 	ui.chkBlockCapture->setCheckable(QString::compare(str, "*") != 0);
-	
+
 	ui.chkAdminOnly->setChecked(m_pBox->GetBool("EditAdminOnly", false));
 
 	QStringList Users = m_pBox->GetText("Enabled").split(",");
@@ -581,7 +581,7 @@ void COptionsWindow::SaveAdvanced()
 
 	for (int i = 0; i < ui.treeTriggers->topLevelItemCount(); i++) {
 		QTreeWidgetItem* pItem = ui.treeTriggers->topLevelItem(i);
-		if (pItem->checkState(0) == Qt::Checked) 
+		if (pItem->checkState(0) == Qt::Checked)
 		{
 			switch (pItem->data(0, Qt::UserRole).toInt())
 			{
@@ -641,7 +641,7 @@ void COptionsWindow::SaveAdvanced()
 		int Type = pItem->data(0, Qt::UserRole).toInt();
 		if (Type == -1)
 			continue; // entry from template
-		HideProcesses.append(pItem->text(0)); 
+		HideProcesses.append(pItem->text(0));
 	}
 	WriteTextList("HideHostProcess", HideProcesses);
 
@@ -652,7 +652,7 @@ void COptionsWindow::SaveAdvanced()
 		int Type = pItem->data(0, Qt::UserRole).toInt();
 		if (Type == -1)
 			continue; // entry from template
-		DenyHostProcesses.append(pItem->text(0) + "," + (pItem->data(1, Qt::UserRole).toBool() ? "y" : "n")); 
+		DenyHostProcesses.append(pItem->text(0) + "," + (pItem->data(1, Qt::UserRole).toBool() ? "y" : "n"));
 	}
 	WriteTextList("DenyHostAccess", DenyHostProcesses);
 
@@ -679,7 +679,7 @@ void COptionsWindow::OnIsolationChanged()
 	if (sender() == ui.chkNoSecurityIsolation) {
 		// we can ignore chkNoSecurityFiltering as it requires chkNoSecurityIsolation
 		if (ui.chkNoSecurityIsolation->isChecked())
-			theGUI->CheckCertificate(this, 0);
+			/* theGUI->CheckCertificate(this, 0); // removed */
 	}
 
 	UpdateBoxIsolation();
@@ -863,7 +863,7 @@ void COptionsWindow::LoadOptionList()
 	foreach(const QString& Name, m_AdvOptions.keys()) {
 		foreach(const QString & Value, m_pBox->GetTextList(Name, m_Template)) {
 			QStringList Values = Value.split(",");
-			if (Values.count() >= 2) 
+			if (Values.count() >= 2)
 				AddOptionEntry(Name, Values[0], Values[1]);
 			else if(m_AdvOptions[Name].ProcSpec == eList)
 				AddOptionEntry(Name, Values[0], "");
@@ -884,7 +884,7 @@ void COptionsWindow::LoadOptionListTmpl(bool bUpdate)
 			foreach(const QString& Name, m_AdvOptions.keys()) {
 				foreach(const QString & Value, m_pBox->GetTextListTmpl(Name, Template)) {
 					QStringList Values = Value.split(",");
-					if (Values.count() >= 2) 
+					if (Values.count() >= 2)
 						AddOptionEntry(Name, Values[0], Values[1], Template);
 					else // all programs
 						AddOptionEntry(Name, "", Values[0], Template);
@@ -962,7 +962,7 @@ void COptionsWindow::AddOptionEntry(const QString& Name, QString Program, const 
 	//else if(!bAll)
 	//	m_Programs.insert(Program);
 	pItem->setText(1, (Not ? "NOT " : "") + Program);
-	
+
 	pItem->setText(2, Value);
 	pItem->setData(2, Qt::UserRole, Value);
 
@@ -972,7 +972,7 @@ void COptionsWindow::AddOptionEntry(const QString& Name, QString Program, const 
 }
 
 void COptionsWindow::OnAddOption()
-{ 
+{
 	CComboInputDialog progDialog(this);
 	progDialog.setText(tr("Add special option:"));
 	progDialog.setEditable(true);
@@ -985,7 +985,7 @@ void COptionsWindow::OnAddOption()
 	if (!progDialog.exec())
 		return;
 
-	QString Name = progDialog.value(); 
+	QString Name = progDialog.value();
 
 	AddOptionEntry(Name, "", "");
 }
@@ -1066,7 +1066,7 @@ void COptionsWindow::OnOptionChanged(QTreeWidgetItem* pItem, int Column)
 
 	OnAdvancedChanged();
 }
-	
+
 void COptionsWindow::CloseOptionEdit(bool bSave)
 {
 	if (!ui.treeOptions) return;
@@ -1087,7 +1087,7 @@ void COptionsWindow::CloseOptionEdit(QTreeWidgetItem* pItem, bool bSave)
 	if (bSave)
 	{
 		QWidget* pProgram = ui.treeOptions->itemWidget(pItem, 1);
-		if (pProgram) 
+		if (pProgram)
 		{
 			QHBoxLayout* pLayout = (QHBoxLayout*)pProgram->layout();
 			QToolButton* pNot = (QToolButton*)pLayout->itemAt(0)->widget();
@@ -1459,7 +1459,7 @@ void COptionsWindow::OnDebugChanged()
 
 void COptionsWindow::LoadDebug()
 {
-	foreach(QCheckBox* pCheck, m_DebugOptions.keys()) 
+	foreach(QCheckBox* pCheck, m_DebugOptions.keys())
 	{
 		SDbgOpt& DbgOption = m_DebugOptions[pCheck];
 		DbgOption.Changed = false;
@@ -1546,7 +1546,7 @@ retry:
 	{
 		HKEY hKey;
 		DWORD disposition;
-		if(RegCreateKeyExW(HKEY_CURRENT_USER, L"System\\SbieCustom", 0, 0, 0, KEY_WRITE, NULL, &hKey, &disposition) == ERROR_SUCCESS) 
+		if(RegCreateKeyExW(HKEY_CURRENT_USER, L"System\\SbieCustom", 0, 0, 0, KEY_WRITE, NULL, &hKey, &disposition) == ERROR_SUCCESS)
 		{
 			if(RegSetValueExW(hKey, L"SMBiosTable", 0, REG_BINARY, firmwareTableInfo->TableBuffer, firmwareTableInfo->TableBufferLength) == ERROR_SUCCESS)
 				CSandMan::ShowMessageBox(this, QMessageBox::Information, tr("Firmware table saved successfully to host registry: HKEY_CURRENT_USER\\System\\SbieCustom<br />you can copy it to the sandboxed registry to have a different value for each box."));

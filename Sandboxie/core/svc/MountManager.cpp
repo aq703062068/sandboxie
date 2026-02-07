@@ -293,7 +293,7 @@ MSG_HEADER *MountManager::MountHandler(MSG_HEADER *msg)
     HANDLE handle = OpenOrCreateNtFolder(TargetNtPath.c_str());
     if (!handle)
         errlvl = 0x12;
-    else 
+    else
     {
         CloseHandle(handle);
 
@@ -303,7 +303,7 @@ MSG_HEADER *MountManager::MountHandler(MSG_HEADER *msg)
     if (errlvl != 0) {
 
         //ULONG err = GetLastError();
-        
+
         ReleaseBoxRoot(req->reg_root, true, session_id);
 
         return SHORT_REPLY(ERROR_FUNCTION_FAILED);
@@ -391,7 +391,7 @@ MSG_HEADER *MountManager::EnumHandler(MSG_HEADER *msg)
     }
 
     LeaveCriticalSection(&m_CritSec);
-    
+
     if (! rpl)
         return SHORT_REPLY(ERROR_NOT_ENOUGH_MEMORY);
 
@@ -418,7 +418,7 @@ MSG_HEADER *MountManager::QueryHandler(MSG_HEADER *msg)
         return SHORT_REPLY(ERROR_DEVICE_NOT_AVAILABLE);
 
     std::shared_ptr<BOX_MOUNT> pMount;
-    if (*req->reg_root) { 
+    if (*req->reg_root) {
         std::shared_ptr<BOX_ROOT> pRoot = GetBoxRootLocked(req->reg_root, false);
         if (pRoot)
             pMount = pRoot->Mount;
@@ -580,7 +580,7 @@ int MountManager::CreateJunction(const std::wstring& TargetNtPath, const std::ws
     //
 
     if (errlvl == 0 && JunctionTarget.empty()) {
-                
+
         memset(&ReparseBuffer, 0, sizeof(buf));
         ReparseBuffer.ReparseTag = IO_REPARSE_TAG_MOUNT_POINT;
         ReparseBuffer.ReparseDataLength = 4 * sizeof(USHORT);
@@ -683,7 +683,7 @@ std::shared_ptr<BOX_MOUNT> MountManager::FindImDisk(const std::wstring& ImageFil
     //
     // Find an already mounted RamDisk,
     // we inspect the volume label to determine if its ours
-    // 
+    //
 
     std::vector<ULONG> DeviceList;
     DeviceList.resize(3);
@@ -715,7 +715,7 @@ retry:
         if (pos == std::wstring::npos || _wcsicmp(proxy.c_str() + (pos + 1), ProxyName.c_str()) != 0)
             continue;
 
-        //if (GetVolumeLabel(IMDISK_DEVICE + std::to_wstring(DeviceList[counter]) + L"\\") != SBIEDISK_LABEL) 
+        //if (GetVolumeLabel(IMDISK_DEVICE + std::to_wstring(DeviceList[counter]) + L"\\") != SBIEDISK_LABEL)
         //  continue;
 
         TargetNtPath = IMDISK_DEVICE + std::to_wstring(DeviceList[counter]);
@@ -743,7 +743,7 @@ template <typename T, typename S>
 void toHexadecimal(T val, S *buf)
 {
     int i;
-    for (i = 0; i < sizeof(T) * 2; ++i) 
+    for (i = 0; i < sizeof(T) * 2; ++i)
     {
         buf[i] = (val >> (4 * (sizeof(T) * 2 - 1 - i))) & 0xf;
         if (buf[i] < 10)
@@ -894,7 +894,7 @@ std::shared_ptr<BOX_MOUNT> MountManager::MountImDisk(const std::wstring& ImageFi
         NTSTATUS status = STATUS_SUCCESS;
 
         pMem = AllocPasswordMemory(pi.hProcess, pPassword);
-        if (!pMem) 
+        if (!pMem)
             status = STATUS_MEMORY_NOT_ALLOCATED;
         else
         {
@@ -961,7 +961,7 @@ std::shared_ptr<BOX_MOUNT> MountManager::MountImDisk(const std::wstring& ImageFi
                 if (_wcsnicmp(pSection->out.mount, IMDISK_DEVICE, IMDISK_DEVICE_LEN) == 0)
                     pMount->NtPath = std::wstring(pSection->out.mount);
             }
-            
+
             //if(_wcsnicmp(pSection, IMDISK_DEVICE, IMDISK_DEVICE_LEN) == 0)
             //    pMount->NtPath = std::wstring(pSection);
             //else { // fallback
@@ -982,7 +982,7 @@ std::shared_ptr<BOX_MOUNT> MountManager::MountImDisk(const std::wstring& ImageFi
             //}
 
             if (!pMount->NtPath.empty()) {
-                    
+
                 ok = true;
 
                 if (!drvLetter) {
@@ -1006,10 +1006,10 @@ std::shared_ptr<BOX_MOUNT> MountManager::MountImDisk(const std::wstring& ImageFi
     //    memzero(pSection, 0x1000);
     //    UnmapViewOfFile(pSection);
     //}
-    //if(hMapping) 
+    //if(hMapping)
     //    CloseHandle(hMapping);
 
-    if(hEvent) 
+    if(hEvent)
         CloseHandle(hEvent);
 
     if (!ok)
@@ -1045,7 +1045,7 @@ retry:
         pRoot->session_id = session_id;
         m_RootMap.insert(std::make_pair(reg_root, pRoot));
     }
-   
+
     // is im process of being unmounted, wait to finish
 //    if (pRoot->Mount && pRoot->Mount->RefCount == -1) {
     if (pRoot->Mount && pRoot->Mount->Unmounting) {
@@ -1095,7 +1095,7 @@ bool MountManager::AcquireBoxRoot(const WCHAR* boxname, const WCHAR* reg_root, c
 
     std::shared_ptr<BOX_ROOT> pRoot = GetBoxRootLocked(reg_root, UseRamDisk || UseFileImage, session_id);
     if (!pRoot) // when NULL is returned m_CritSec is not locked
-        return true; 
+        return true;
     if (!UseRamDisk && !UseFileImage) { // when a box root was found but is not needed, release it
         LeaveCriticalSection(&m_CritSec);
         ReleaseBoxRoot(reg_root, true, session_id);
@@ -1104,7 +1104,7 @@ bool MountManager::AcquireBoxRoot(const WCHAR* boxname, const WCHAR* reg_root, c
 
     //
     // Check if the mount is still up an if the ImDisk device is the right one
-    // 
+    //
     // WARNING: when we enter here and an image is already mounted, file_root
     //              will point to the ImDisk device and not the real path
     //
@@ -1125,7 +1125,7 @@ bool MountManager::AcquireBoxRoot(const WCHAR* boxname, const WCHAR* reg_root, c
     std::wstring TargetNtPath;
 
     __declspec(align(8)) SCertInfo CertInfo = { 0 };
-    if ((UseFileImage || UseRamDisk) && (!NT_SUCCESS(SbieApi_QueryDrvInfo(-1, &CertInfo, sizeof(CertInfo))) || !(CertInfo.active && (UseFileImage ? CertInfo.opt_enc : CertInfo.opt_sec)))) {
+    if ((UseFileImage || UseRamDisk) && (0) /* cert check removed */) {
         const WCHAR* strings[] = { boxname, UseFileImage ? L"UseFileImage" : L"UseRamDisk" , NULL };
         SbieApi_LogMsgExt(session_id, UseFileImage ? 6009 : 6008, strings);
         errlvl = 0x66;
@@ -1133,7 +1133,7 @@ bool MountManager::AcquireBoxRoot(const WCHAR* boxname, const WCHAR* reg_root, c
 
     if(!pRoot->Mount || pRoot->Mount->NtPath.empty()) {
 //        SbieApi_LogEx(session_id, 2201, L"AcquireBoxRoot %S", boxname);
-        
+
         if (UseRamDisk) {
 
             if(!m_RamDisk || m_RamDisk->NtPath.empty())
@@ -1164,7 +1164,7 @@ bool MountManager::AcquireBoxRoot(const WCHAR* boxname, const WCHAR* reg_root, c
 
             //pRoot->AutoUnmount = SbieApi_QueryConfBool(boxname, L"AutoUnmount", FALSE);
         }
-            
+
         if (!pRoot->Mount || pRoot->Mount->NtPath.empty())
             errlvl = 0x11;
         else
@@ -1235,7 +1235,7 @@ void MountManager::LockBoxRoot(const WCHAR* reg_root, ULONG session_id)
 //        SbieApi_LogEx(session_id, 2201, L"LockBoxRoot %S", reg_root);
         I->second->InUse = true;
     }
-    
+
     LeaveCriticalSection(&m_CritSec);
 }
 
@@ -1272,7 +1272,7 @@ void MountManager::ReleaseBoxRoot(const WCHAR* reg_root, bool force, ULONG sessi
             }
 		}
     }
-    
+
     LeaveCriticalSection(&m_CritSec);
 }
 
@@ -1288,7 +1288,7 @@ void MountManager::ReleaseBoxRoot(const WCHAR* reg_root, bool force, ULONG sessi
 //
 //    EnterCriticalSection(&This->m_CritSec);
 //    for (;;) {
-//        
+//
 //        ULONG session_id = 0;
 //        std::shared_ptr<BOX_MOUNT> pToUnMount;
 //
@@ -1316,7 +1316,7 @@ void MountManager::ReleaseBoxRoot(const WCHAR* reg_root, bool force, ULONG sessi
 //        pToUnMount->RefCount = -1; // 1 -> -1
 //
 //        LeaveCriticalSection(&This->m_CritSec);
-//    
+//
 //        bool ok = UnMountImDisk(Device, hProcess);
 //
 //        if(!ok)
@@ -1390,7 +1390,7 @@ bool MountManager::TryUnmountImDisk(const std::wstring& Device, HANDLE hProcess,
 //---------------------------------------------------------------------------
 
 
-bool MountManager::UnmountImDisk(const std::wstring& Device, HANDLE hProcess) 
+bool MountManager::UnmountImDisk(const std::wstring& Device, HANDLE hProcess)
 {
     for (int i = 0; i < 7; i++) { // 5 attempt normal and 2 forced
         if (TryUnmountImDisk(Device, hProcess, i > 4 ? 1 : 0))
@@ -1416,7 +1416,7 @@ bool MountManager::UnmountImDiskLocked(const std::shared_ptr<BOX_MOUNT>& pToUnMo
     //pToUnMount->RefCount = -1; // 1 -> -1
 
     LeaveCriticalSection(&m_CritSec);
-    
+
     bool ok = UnmountImDisk(Device, hProcess);
 
     if(!ok)

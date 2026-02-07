@@ -38,8 +38,8 @@ public:
 class ProgramsDelegate : public QStyledItemDelegate {
 public:
 	ProgramsDelegate(COptionsWindow* pOptions, QTreeWidget* pTree, int Column, QObject* parent = 0) : QStyledItemDelegate(parent) {
-		m_pOptions = pOptions; 
-		m_pTree = pTree; 
+		m_pOptions = pOptions;
+		m_pTree = pTree;
 		m_Column = (m_Group = (Column == -2)) ? -1 : Column;
 	}
 
@@ -119,7 +119,7 @@ public:
 
 		QComboBox* pBox = qobject_cast<QComboBox*>(editor);
 		if (pBox) {
-			
+
 			QString Value = pBox->property("value").toString();
 			bool prev = m_pTree->blockSignals(true);
 			pItem->setText(index.column(), pBox->currentText());
@@ -165,7 +165,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 
 	m_Template = pBox->GetName().left(9).compare("Template_", Qt::CaseInsensitive) == 0;
 	bool ReadOnly = /*pBox->GetAPI()->IsConfigLocked() ||*/ (m_Template && pBox->GetName().mid(9, 6).compare("Local_", Qt::CaseInsensitive) != 0);
-	
+
 	m_HoldChange = false;
 	m_SkipSaveOnToggle = false;
 
@@ -230,7 +230,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	ui.tabsStop->setTabIcon(0, CSandMan::GetIcon("Fail"));
 	ui.tabsStop->setTabIcon(1, CSandMan::GetIcon("Pass"));
 	ui.tabsStop->setTabIcon(2, CSandMan::GetIcon("Policy"));
-		
+
 	ui.tabsInternet->setCurrentIndex(0);
 	ui.tabsInternet->setTabIcon(0, CSandMan::GetIcon("EthSocket2"));
 	ui.tabsInternet->setTabIcon(1, CSandMan::GetIcon("Wall"));
@@ -414,7 +414,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 
 
 	if (theConf->GetBool("Options/AltRowColors", false)) {
-		foreach(QTreeWidget* pTree, this->findChildren<QTreeWidget*>()) 
+		foreach(QTreeWidget* pTree, this->findChildren<QTreeWidget*>())
 			pTree->setAlternatingRowColors(true);
 	}
 
@@ -466,7 +466,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	QCompleter* completer = new QCompleter(this);
 	completer->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
 	completer->setFilterMode(Qt::MatchContains);
-	
+
 	// Set completer based on mode
 	if (CCodeEdit::GetAutoCompletionMode() != CCodeEdit::AutoCompletionMode::Disabled) {
 		m_pCodeEdit->SetCompleter(completer);
@@ -487,7 +487,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	m_pCodeEdit->SetPopupTooltipCallback([](const QString& keyName) -> QString {
 		return CIniHighlighter::GetSettingTooltipForPopup(keyName);
 		});
-	
+
 	// Update completion model with current settings if auto completion is enabled
 	if (CCodeEdit::GetAutoCompletionMode() != CCodeEdit::AutoCompletionMode::Disabled) {
 		UpdateAutoCompletion();
@@ -504,7 +504,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		//ui.tabOther->setEnabled(false);
 		//ui.tabTemplates->setEnabled(false);
 		//
-		//for (int i = 0; i < ui.tabs->count(); i++) 
+		//for (int i = 0; i < ui.tabs->count(); i++)
 		//	ui.tabs->setTabEnabled(i, ui.tabs->widget(i)->isEnabled());
 
 		//ui.tabs->setCurrentIndex(ui.tabs->indexOf(ui.tabAccess));
@@ -690,7 +690,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	UpdateCurrentTab();
 
 	ui.buttonBox->button(QDialogButtonBox::Apply)->setEnabled(false);
-	
+
 	ui.treeCopy->viewport()->installEventFilter(this);
 	ui.treeINet->viewport()->installEventFilter(this);
 	ui.treeNetFw->viewport()->installEventFilter(this);
@@ -707,7 +707,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 
 	foreach(QTreeWidget * pTree, this->findChildren<QTreeWidget*>()) {
 		QByteArray Columns = theConf->GetBlob("OptionsWindow/" + pTree->objectName() + "_Columns");
-		if (!Columns.isEmpty()) 
+		if (!Columns.isEmpty())
 			pTree->header()->restoreState(Columns);
 	}
 
@@ -752,7 +752,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		this->addAction(pSetTree);
 	}
 	m_pSearch->setPlaceholderText(tr("Search for options"));
-	
+
 	SetTabOrder(this);
 }
 
@@ -788,7 +788,7 @@ void COptionsWindow::OnSetTree()
 	ui.tabs = NULL;
 }
 
-void COptionsWindow::OnOptChanged() 
+void COptionsWindow::OnOptChanged()
 {
 	if (m_HoldChange)
 		return;
@@ -799,7 +799,7 @@ COptionsWindow::~COptionsWindow()
 {
 	theConf->SetBlob("OptionsWindow/Window_Geometry",saveGeometry());
 
-	foreach(QTreeWidget * pTree, this->findChildren<QTreeWidget*>()) 
+	foreach(QTreeWidget * pTree, this->findChildren<QTreeWidget*>())
 		theConf->SetBlob("OptionsWindow/" + pTree->objectName() + "_Columns", pTree->header()->saveState());
 }
 
@@ -811,19 +811,19 @@ void COptionsWindow::closeEvent(QCloseEvent *e)
 
 bool COptionsWindow::eventFilter(QObject *source, QEvent *event)
 {
-	if (event->type() == QEvent::KeyPress && ((QKeyEvent*)event)->key() == Qt::Key_Escape 
+	if (event->type() == QEvent::KeyPress && ((QKeyEvent*)event)->key() == Qt::Key_Escape
 		&& ((QKeyEvent*)event)->modifiers() == Qt::NoModifier
 		&& source == m_pCodeEdit)
 	{
 		return true; // cancel event
 	}
 
-	if (event->type() == QEvent::KeyPress && ((QKeyEvent*)event)->key() == Qt::Key_Escape 
+	if (event->type() == QEvent::KeyPress && ((QKeyEvent*)event)->key() == Qt::Key_Escape
 		&& ((QKeyEvent*)event)->modifiers() == Qt::NoModifier
 		&& (source == ui.treeCopy->viewport()
-			|| source == ui.treeINet->viewport() || source == ui.treeNetFw->viewport() 
+			|| source == ui.treeINet->viewport() || source == ui.treeNetFw->viewport()
 			// || source == ui.treeAccess->viewport()
-			|| source == ui.treeFiles->viewport() || source == ui.treeKeys->viewport() || source == ui.treeIPC->viewport() || source == ui.treeWnd->viewport() || source == ui.treeCOM->viewport() 
+			|| source == ui.treeFiles->viewport() || source == ui.treeKeys->viewport() || source == ui.treeIPC->viewport() || source == ui.treeWnd->viewport() || source == ui.treeCOM->viewport()
 			|| (ui.treeOptions && source == ui.treeOptions->viewport())))
 	{
 		CloseCopyEdit(false);
@@ -835,7 +835,7 @@ bool COptionsWindow::eventFilter(QObject *source, QEvent *event)
 		return true; // cancel event
 	}
 
-	if (event->type() == QEvent::KeyPress && (((QKeyEvent*)event)->key() == Qt::Key_Enter || ((QKeyEvent*)event)->key() == Qt::Key_Return) 
+	if (event->type() == QEvent::KeyPress && (((QKeyEvent*)event)->key() == Qt::Key_Enter || ((QKeyEvent*)event)->key() == Qt::Key_Return)
 		&& (((QKeyEvent*)event)->modifiers() == Qt::NoModifier || ((QKeyEvent*)event)->modifiers() == Qt::KeypadModifier))
 	{
 		CloseCopyEdit(true);
@@ -846,7 +846,7 @@ bool COptionsWindow::eventFilter(QObject *source, QEvent *event)
         CloseNetProxyEdit(true);
 		return true; // cancel event
 	}
-	
+
 	if (source == ui.treeCopy->viewport() && event->type() == QEvent::MouseButtonPress)
 	{
 		CloseCopyEdit();
@@ -867,7 +867,7 @@ bool COptionsWindow::eventFilter(QObject *source, QEvent *event)
 		CloseNetProxyEdit();
 	}
 
-	if (//source == ui.treeAccess->viewport() 
+	if (//source == ui.treeAccess->viewport()
 		(source == ui.treeFiles->viewport() || source == ui.treeKeys->viewport() || source == ui.treeIPC->viewport() || source == ui.treeWnd->viewport() || source == ui.treeCOM->viewport())
 		&& event->type() == QEvent::MouseButtonPress)
 	{
@@ -987,7 +987,7 @@ void COptionsWindow::ReadGlobalCheck(QCheckBox* pCheck, const QString& Setting, 
 	int iGlobal = COptionsWindow__GetBoolConfig(m_pBox->GetText(Setting, QString(), true));
 
 	bool bTemplate = m_pBox->GetBool(Setting, bDefault, true, true);
-	if (iLocal != -1) 
+	if (iLocal != -1)
 		pCheck->setChecked(iLocal == 1);
 	else
 		pCheck->setChecked(iTemplate != -1 ? iTemplate == 1 : iGlobal != -1 ? iGlobal == 1 : bDefault);
@@ -1006,7 +1006,7 @@ void COptionsWindow::WriteGlobalCheck(QCheckBox* pCheck, const QString& Setting,
 	SB_STATUS Status;
 	if(bPreset == bLocal)
 		Status = m_pBox->DelValue(Setting);
-	else 
+	else
 		Status = m_pBox->SetText(Setting, bLocal ? "y" : "n");
 
 	if (!Status)
@@ -1043,7 +1043,7 @@ void COptionsWindow::LoadConfig()
 
 	LoadAdvanced();
 	LoadDebug();
-	
+
 	UpdateBoxType();
 
 	// Update autocompletion after all settings are loaded
@@ -1055,11 +1055,11 @@ void COptionsWindow::LoadConfig()
 void COptionsWindow::WriteAdvancedCheck(QCheckBox* pCheck, const QString& Name, const QString& Value)
 {
 	SB_STATUS Status;
-	if (pCheck->checkState() == Qt::Checked)		
+	if (pCheck->checkState() == Qt::Checked)
 		Status = m_pBox->SetText(Name, Value);
-	else if (pCheck->checkState() == Qt::Unchecked) 
+	else if (pCheck->checkState() == Qt::Unchecked)
 		Status = m_pBox->DelValue(Name);
-	
+
 	if (!Status)
 		throw Status;
 }
@@ -1119,7 +1119,7 @@ void COptionsWindow::WriteTextSafe(const QString& Name, const QString& Value)
 {
 	QStringList List = m_pBox->GetTextList(Name, false);
 
-	// clear all non per process (name=program.exe,value) entries 
+	// clear all non per process (name=program.exe,value) entries
 	for (int i = 0; i < List.count(); i++) {
 		if (!List[i].contains(","))
 			List.removeAt(i--);
@@ -1303,7 +1303,7 @@ void COptionsWindow::showTab(const QString& Name)
 				}
 			}
 		}
-	} 
+	}
 	else
 		m_pStack->setCurrentWidget(pWidget);
 
@@ -1345,7 +1345,7 @@ QString COptionsWindow::SelectProgram(bool bOrGroup)
 		return QString();
 
 	// Note: pressing enter adds the value to the combo list !
-	QString Program = progDialog.value(); 
+	QString Program = progDialog.value();
 	int Index = progDialog.findValue(Program);
 	if (Index != -1 && progDialog.data().isValid())
 		Program = progDialog.data().toString();
@@ -1362,7 +1362,7 @@ void COptionsWindow::OnTab(QWidget* pTab)
 		LoadIniSection();
 		//ui.txtIniSection->setReadOnly(true);
 	}
-	else 
+	else
 	{
 		if (m_ConfigDirty)
 			LoadConfig();
@@ -1373,7 +1373,7 @@ void COptionsWindow::OnTab(QWidget* pTab)
 
 void COptionsWindow::UpdateCurrentTab()
 {
-	if (m_pCurrentTab == ui.tabRestrictions || m_pCurrentTab == ui.tabOptions || m_pCurrentTab == ui.tabGeneral) 
+	if (m_pCurrentTab == ui.tabRestrictions || m_pCurrentTab == ui.tabOptions || m_pCurrentTab == ui.tabGeneral)
 	{
 		ui.chkVmRead->setChecked(IsAccessEntrySet(eIPC, "", eReadOnly, "$:*"));
 	}
@@ -1399,7 +1399,7 @@ void COptionsWindow::UpdateCurrentTab()
 	else if (m_pCurrentTab == ui.tabDNS || m_pCurrentTab == ui.tabNetProxy)
 	{
 		if (!m_HoldChange && !m_pCurrentTab->isEnabled())
-			theGUI->CheckCertificate(this, 2);
+			/* theGUI->CheckCertificate(this, 2); // removed */
 	}
 	else if (m_pCurrentTab == ui.tabCOM) {
 		CheckOpenCOM();
@@ -1451,7 +1451,7 @@ void COptionsWindow::OnIniValidationToggled(int state)
 	m_HoldChange = true;
 
 	m_IniValidationEnabled = (state == Qt::Checked);
-	
+
 	// Only save to config if not in a reset-skip context
 	if (!m_SkipSaveOnToggle) {
 		theConf->SetValue("Options/ValidateIniKeys", m_IniValidationEnabled);
@@ -1508,14 +1508,14 @@ void COptionsWindow::OnAutoCompletionToggled(int state)
 	// Show consent dialog if enabling and not yet consented
 	if (state != Qt::Unchecked && !m_AutoCompletionConsent) {
 		int chosenState = ShowConsentDialog();
-		
+
 		if (chosenState == Qt::Unchecked) {
 			// Cancel - revert the checkbox and return
 			ui.chkEnableAutoCompletion->setCheckState(Qt::Unchecked);
 			m_HoldChange = false;
 			return;
 		}
-		
+
 		// Consent was given, update UI and state
 		ui.chkEnableAutoCompletion->setEnabled(true);
 		ui.chkEnableAutoCompletion->setTristate(true);
@@ -1562,15 +1562,15 @@ void COptionsWindow::OnEditorSettings()
 		bool previousConsent = m_AutoCompletionConsent;
 		LoadCompletionConsent();
 		bool newConsent = m_AutoCompletionConsent;
-		
+
 		// If consent was just granted (changed from false to true), show the consent dialog
 		if (!previousConsent && newConsent) {
 			int chosenState = ShowConsentDialog();
-			
+
 			// Save the chosen autocomplete mode to config
 			theConf->SetValue("Options/EnableAutoCompletion", chosenState);
 		}
-		
+
 		// Update the current checkboxes to reflect the new settings
 		// Note: OptionsWindow only has UI checkboxes for 3 settings:
 		// - ValidateIniKeys (ui.chkValidateIniKeys)
@@ -1578,19 +1578,19 @@ void COptionsWindow::OnEditorSettings()
 		// - EnableAutoCompletion (ui.chkEnableAutoCompletion)
 		// The other 3 settings (EnablePopupTooltips, EnableFuzzyMatching, AutoCompletionConsent)
 		// are managed by EditorSettings but don't have corresponding UI in OptionsWindow
-		
+
 		// Block signals while updating checkboxes to prevent toggle handlers from being called prematurely
 		ui.chkValidateIniKeys->blockSignals(true);
 		ui.chkEnableTooltips->blockSignals(true);
 		ui.chkEnableAutoCompletion->blockSignals(true);
-		
+
 		// Read current values from config (will be defaults if settings were reset/deleted)
 		bool defaultValidation = theConf->GetBool("Options/ValidateIniKeys", true);
 		ui.chkValidateIniKeys->setChecked(defaultValidation);
-		
+
 		int defaultTooltip = theConf->GetInt("Options/EnableIniTooltips", 1); // 1 = BasicInfo
 		ui.chkEnableTooltips->setCheckState(static_cast<Qt::CheckState>(defaultTooltip));
-		
+
 		int defaultAutoCompletion = theConf->GetInt("Options/EnableAutoCompletion", 0); // 0 = Disabled
 		if (m_AutoCompletionConsent) { // Consented
 			ui.chkEnableAutoCompletion->setTristate(true);
@@ -1600,31 +1600,31 @@ void COptionsWindow::OnEditorSettings()
 			ui.chkEnableAutoCompletion->setTristate(false);
 			ui.chkEnableAutoCompletion->setCheckState(Qt::Unchecked);
 		}
-		
+
 		// Unblock signals before calling toggle handlers manually
 		ui.chkValidateIniKeys->blockSignals(false);
 		ui.chkEnableTooltips->blockSignals(false);
 		ui.chkEnableAutoCompletion->blockSignals(false);
-		
+
 		// Apply the settings immediately
 		// Set skip flag for reset settings to prevent re-saving them to config
 		// For non-reset settings, allow normal save behavior
-		
+
 		// ValidateIniKeys
 		m_SkipSaveOnToggle = editorWindow.WasValidateIniKeysReset();
 		OnIniValidationToggled(defaultValidation ? Qt::Checked : Qt::Unchecked);
 		m_SkipSaveOnToggle = false;
-		
+
 		// EnableIniTooltips
 		m_SkipSaveOnToggle = editorWindow.WasEnableIniTooltipsReset();
 		OnTooltipToggled(defaultTooltip);
 		m_SkipSaveOnToggle = false;
-		
+
 		// EnableAutoCompletion
 		m_SkipSaveOnToggle = editorWindow.WasEnableAutoCompletionReset();
 		OnAutoCompletionToggled(defaultAutoCompletion);
 		m_SkipSaveOnToggle = false;
-		
+
 		// Apply settings that don't have UI checkboxes in OptionsWindow
 		// These are managed via EditorSettings only
 		if (editorWindow.HasResetOccurred()) {
@@ -1632,7 +1632,7 @@ void COptionsWindow::OnEditorSettings()
 			bool fuzzyEnabled = theConf->GetBool("Options/EnableFuzzyMatching", false);
 			m_pCodeEdit->SetFuzzyMatchingEnabled(fuzzyEnabled);
 		}
-		
+
 		// Always update autocompletion list regardless of reset status
 		UpdateAutoCompletion();
 	}
@@ -1701,7 +1701,7 @@ void COptionsWindow::SaveIniSection()
 		if (Line.isEmpty())
 			return;
 		StrPair Settings = Split2(Line, "=");
-		
+
 		//if (!OldSettings.removeOne(Settings))
 		//	NewSettings.append(Settings);
 
@@ -1788,12 +1788,12 @@ int COptionsWindow::ShowConsentDialog()
 
 	QPushButton* cancelButton = consentBox.addButton(tr("Cancel"), QMessageBox::NoRole);
 	cancelButton->setToolTip(tr("Keeps autocomplete suggestions disabled."));
-	
+
 	consentBox.setDefaultButton(basicButton);
-	
+
 	consentBox.exec();
 	QAbstractButton* clickedButton = consentBox.clickedButton();
-	
+
 	if (clickedButton == basicButton) {
 		m_AutoCompletionConsent = true;
 		SaveCompletionConsent();

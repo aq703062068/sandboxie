@@ -68,10 +68,10 @@ void COptionsWindow::CreateNetwork()
 
 	connect(ui.txtIPv4, SIGNAL(textChanged(const QString&)), this, SLOT(OnNetworkChanged()));
 	connect(ui.txtIPv6, SIGNAL(textChanged(const QString&)), this, SLOT(OnNetworkChanged()));
-	
+
 	connect(ui.tabsInternet, SIGNAL(currentChanged(int)), this, SLOT(OnInternetTab()));
 
-	if (!g_CertInfo.opt_net) {
+	if (0) { // cert check removed
 		ui.tabDNS->setEnabled(false);
 		ui.tabNetProxy->setEnabled(false);
 	}
@@ -82,12 +82,12 @@ void COptionsWindow::CreateNetwork()
 }
 
 void COptionsWindow::OnBlockDns()
-{ 
+{
 	SetTemplate("BlockDNS", ui.chkBlockDns->isChecked());
 }
 
 void COptionsWindow::OnBlockSamba()
-{ 
+{
 	SetTemplate("BlockPorts", ui.chkBlockSamba->isChecked());
 }
 
@@ -97,7 +97,7 @@ void COptionsWindow::LoadNetwork()
 
 	ui.chkBlockNetShare->setChecked(m_pBox->GetBool("BlockNetworkFiles", false));
 	ui.chkBlockNetParam->setChecked(m_pBox->GetBool("BlockNetParam", true));
-	
+
 	QStringList BindNICs = m_pBox->GetTextList("BindAdapter", false);
 	QString BindAdapter;
 	foreach(const QString& BindNIC, BindNICs) {
@@ -136,7 +136,7 @@ void COptionsWindow::LoadNetwork()
 void COptionsWindow::SaveNetwork()
 {
 	WriteAdvancedCheck(ui.chkUseProxyThreads, "UseProxyThreads", "y", "");
-	
+
 	WriteAdvancedCheck(ui.chkBlockNetShare, "BlockNetworkFiles", "y", "");
 	WriteAdvancedCheck(ui.chkBlockNetParam, "BlockNetParam", "", "n");
 
@@ -178,7 +178,7 @@ void COptionsWindow::OnAdapterChanged()
 	ui.txtIPv4->setReadOnly(ui.cmbNIC->currentIndex() != 0);
 	ui.txtIPv6->setReadOnly(ui.cmbNIC->currentIndex() != 0);
 
-	if (ui.cmbNIC->currentIndex() != 0) 
+	if (ui.cmbNIC->currentIndex() != 0)
 	{
 		QVariantMap NIC = ui.cmbNIC->currentData().toMap();
 		QStringList Ip4 = NIC["Ip4"].toStringList();
@@ -198,8 +198,8 @@ void COptionsWindow::OnAdapterChanged()
 void COptionsWindow::LoadINetAccess()
 {
 	// check if we are blocking globally and if so adapt the behaviour accordingly
-	m_WFPisBlocking = !m_pBox->GetAPI()->GetGlobalSettings()->GetBool("AllowNetworkAccess", true); 
-	
+	m_WFPisBlocking = !m_pBox->GetAPI()->GetGlobalSettings()->GetBool("AllowNetworkAccess", true);
+
 	ui.lblNoWfp->setVisible(!theGUI->IsWFPEnabled()); // warn user that this is only user mode
 
 	ui.cmbBlockINet->clear();
@@ -276,7 +276,7 @@ void COptionsWindow::LoadBlockINet()
 {
 	if (IsAccessEntrySet(eFile, "!<InternetAccess>", eClosed, "InternetAccessDevices"))
 		ui.cmbBlockINet->setCurrentIndex(ui.cmbBlockINet->findData(2));
-	else if (theGUI->IsWFPEnabled() && (FindEntryInSettingList("AllowNetworkAccess", "!<InternetAccess>,n") 
+	else if (theGUI->IsWFPEnabled() && (FindEntryInSettingList("AllowNetworkAccess", "!<InternetAccess>,n")
 		|| (m_WFPisBlocking && !FindEntryInSettingList("AllowNetworkAccess", "y"))))
 		ui.cmbBlockINet->setCurrentIndex(ui.cmbBlockINet->findData(1));
 	else
@@ -289,16 +289,16 @@ void COptionsWindow::LoadBlockINet()
 	//ui.chkINetBlockMsg->setEnabled(ui.chkBlockINet->isChecked());
 	ui.chkINetBlockMsg->setEnabled(ui.cmbBlockINet->currentIndex() != 0);
 	ui.chkINetBlockMsg->setChecked(m_pBox->GetBool("NotifyInternetAccessDenied", true));
-	
+
 
 	ui.treeINet->clear();
-	for (int i = 0; i < ui.treeGroups->topLevelItemCount(); i++) 
+	for (int i = 0; i < ui.treeGroups->topLevelItemCount(); i++)
 	{
 		QTreeWidgetItem* pGroupItem = ui.treeGroups->topLevelItem(i);
 		int GroupMode = GroupToINetMode(pGroupItem->data(0, Qt::UserRole).toString());
 		if (GroupMode == -1)
 			continue;
-		
+
 		for (int j = 0; j < pGroupItem->childCount(); j++)
 		{
 			QString Value = pGroupItem->child(j)->data(0, Qt::UserRole).toString();
@@ -306,9 +306,9 @@ void COptionsWindow::LoadBlockINet()
 			QTreeWidgetItem* pItem = new QTreeWidgetItem();
 			pItem->setCheckState(0, (GroupMode & 0x10) != 0 ? Qt::Unchecked : Qt::Checked);
 			int Mode = GroupMode & ~0x10;
-			
+
 			SetProgramItem(Value, pItem, 0);
-	
+
 			pItem->setData(1, Qt::UserRole, Mode);
 			if (!theGUI->IsWFPEnabled() && Mode == 1) Mode = -1; // this mode is not available
 			pItem->setText(1, GetINetModeStr(Mode));
@@ -442,7 +442,7 @@ void COptionsWindow::CloseINetEdit(QTreeWidgetItem* pItem, bool bSave)
 
 
 		SetProgramItem(NewProgram, pItem, 0);
-	
+
 		pItem->setText(1, GetINetModeStr(NewMode));
 		pItem->setData(1, Qt::UserRole, NewMode);
 
@@ -483,9 +483,9 @@ void COptionsWindow::OnAddINetProg()
 	int Mode = 0;
 
 	QTreeWidgetItem* pItem = new QTreeWidgetItem();
-			
+
 	SetProgramItem(Value, pItem, 0);
-	
+
 	pItem->setText(1, GetINetModeStr(Mode));
 	pItem->setData(1, Qt::UserRole, Mode);
 
@@ -520,7 +520,7 @@ bool COptionsWindow::FindEntryInSettingList(const QString& Name, const QString& 
 {
 	QStringList Settings = m_pBox->GetTextList(Name, false);
 	foreach(const QString & Setting, Settings) {
-		if (Setting.compare(Value, Qt::CaseInsensitive) == 0) 
+		if (Setting.compare(Value, Qt::CaseInsensitive) == 0)
 			return true;
 	}
 	return false;
@@ -615,7 +615,7 @@ QString COptionsWindow::GetFwRuleProtStr(ENetWfProt Prot)
 void COptionsWindow::ParseAndAddFwRule(const QString& Value, bool disabled, const QString& Template)
 {
 	QTreeWidgetItem* pItem = new QTreeWidgetItem();
-	
+
 	//NetworkAccess=explorer.exe,Allow;Port=137,138,139,445;Address=192.168.0.1-192.168.100.255;Protocol=TCP;
 
 	QString FirstStr;
@@ -636,10 +636,10 @@ void COptionsWindow::ParseAndAddFwRule(const QString& Value, bool disabled, cons
 	else if(!bAll)
 		m_Programs.insert(Program);
 	pItem->setText(0, (Not ? "NOT " : "") + Program);
-	
+
 	pItem->setText(1, Action + (Template.isEmpty() ? "" : " (" + Template + ")"));
 	pItem->setData(1, Qt::UserRole, Template.isEmpty() ? (int)GetFwRuleAction(Action) : -1);
-	
+
 	QString Port = Tags.value("port");
 	pItem->setText(2, Port);
 	pItem->setData(2, Qt::UserRole, Port);
@@ -676,7 +676,7 @@ void COptionsWindow::SaveNetFwRules()
 		QString Temp = GetFwRuleActionStr(Action);
 		QString Protocol = GetFwRuleProtStr(Prot);
 		//if (Program.contains("=") || Program.contains(";") || Program.contains(",")) // todo: make SBIE parses this properly
-		//	Program = "\'" + Program + "\'"; 
+		//	Program = "\'" + Program + "\'";
 		if (Program.isEmpty())
 			Program = "*";
 		Temp.prepend(Program + ",");
@@ -811,7 +811,7 @@ void COptionsWindow::CloseNetFwEdit(QTreeWidgetItem* pItem, bool bSave)
 
 		pItem->setText(1, pAction->currentText());
 		pItem->setData(1, Qt::UserRole, pAction->currentData());
-	
+
 		pItem->setText(2, pPort->text());
 		pItem->setData(2, Qt::UserRole, pPort->text());
 
@@ -832,10 +832,10 @@ void COptionsWindow::CloseNetFwEdit(QTreeWidgetItem* pItem, bool bSave)
 void COptionsWindow::OnAddNetFwRule()
 {
 	QTreeWidgetItem* pItem = new QTreeWidgetItem();
-			
+
 	pItem->setData(0, Qt::UserRole, "");
 	pItem->setText(0, tr("All Programs"));
-	
+
 	pItem->setText(1, GetFwRuleActionStr(eBlock));
 	pItem->setData(1, Qt::UserRole, (int)eBlock);
 
@@ -864,9 +864,9 @@ void COptionsWindow::LoadDnsFilter()
 	ui.treeDns->clear();
 	foreach(const QString & Value, m_pBox->GetTextList("NetworkDnsFilter", m_Template))
 		AddDnsFilter(Value);
-	foreach(const QString& Value, m_pBox->GetTextList("NetworkDnsFilterDisabled", m_Template)) 
+	foreach(const QString& Value, m_pBox->GetTextList("NetworkDnsFilterDisabled", m_Template))
 		AddDnsFilter(Value, true);
-	
+
 	m_DnsFilterChanged = false;
 }
 
@@ -963,7 +963,7 @@ QString COptionsWindow::GetAuthModeStr(COptionsWindow::EAuthMode Mode)
 	return "";
 }
 
-void COptionsWindow::OnProxyResolveHostnames() 
+void COptionsWindow::OnProxyResolveHostnames()
 {
 	m_NetProxyChanged = true;
 	OnOptChanged();
@@ -1131,7 +1131,7 @@ void COptionsWindow::ParseAndAddNetProxy(const QString& Value, bool disabled, co
 		auto res = theAPI->RC4Crypt(QByteArray::fromBase64(Pass.toLatin1()));
 		if (!res.IsError())
 			Pass = QString::fromWCharArray((wchar_t*)res.GetValue().data(), res.GetValue().length() / sizeof(wchar_t));
-	}		
+	}
 	if (Pass.length() > 255) Pass = Pass.left(255);
 	pItem->setText(5, Pass);
 	pItem->setData(5, Qt::UserRole, Pass);
@@ -1355,7 +1355,7 @@ struct SFirewallRule
 			Test.remove(0, 1);
 			bNot = true;
 		}
-	
+
 		// ToDo: match groups and wildcards
 
 		if (TestProg.isEmpty() || ((Test.compare(TestProg, Qt::CaseInsensitive) == 0) != bNot))
@@ -1446,7 +1446,7 @@ struct SFirewallRule
 		COptionsWindow::ENetWfAction Action;
 	};
 
-	bool MatchRule(const QString& TestProg, quint16 TestPort, const QHostAddress& TestAddress, COptionsWindow::ENetWfProt TestProt, SMatch* Match) 
+	bool MatchRule(const QString& TestProg, quint16 TestPort, const QHostAddress& TestAddress, COptionsWindow::ENetWfProt TestProt, SMatch* Match)
 	{
 		//SMatch Dummy;
 		//if (!Match) Match = &Dummy;
@@ -1474,7 +1474,7 @@ struct SFirewallRule
 	{
 		// 1. A rule for a specified program trumps a rule for all programs except a given one, trumps a rule for all programs
 		COMPARE_AND_RETURN(MyMatch.ByProg, OtherMatch.ByProg);
-		
+
 		// 2. a rule with a Port or IP trumps a rule without
 		// 2a. a rule with ip and port trums a rule with ip or port only
 		// 2b. a rule with one ip trumps a rule with an ip range that is besides that on the same level
@@ -1485,7 +1485,7 @@ struct SFirewallRule
 		// 3. block rules trump allow rules
 		if(MyMatch.Action == COptionsWindow::eBlock && OtherMatch.Action != COptionsWindow::eBlock)
 			return true;
-		
+
 		// 4. a rule without a protocol means all protocols, a rule with a protocol trumps a rule without if its the only difference
 		COMPARE_AND_RETURN(MyMatch.ByProtocol, OtherMatch.ByProtocol);
 
@@ -1559,14 +1559,14 @@ void COptionsWindow::OnTestNetFwRule()
 
 	if(pBestItem)
 		COptionsWindow__SetRowColor(pBestItem, true, false, BestRule.Action == eBlock, true);
-	
+
 	//
 	// rule merging
 	// 	   if the rule is for the same prog and has the same action
 	// 	   merge all rules with ip only together
 	// 	   merge all rules with ports only together
-	// 
-	// 
+	//
+	//
 
 }
 
@@ -1576,7 +1576,7 @@ void COptionsWindow::OnClearNetFwTest()
 	ui.txtPortFwTest->setText("");
 	ui.txtIPFwTest->setText("");
 	ui.cmbProtFwTest->setCurrentIndex(0);
-	
+
 	for (int i = 0; i < ui.treeNetFw->topLevelItemCount(); i++)
 	{
 		QTreeWidgetItem* pItem = ui.treeNetFw->topLevelItem(i);

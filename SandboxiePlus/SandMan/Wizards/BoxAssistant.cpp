@@ -46,7 +46,7 @@ CBoxAssistant::CBoxAssistant(QWidget *parent)
     setPage(Page_Run, new CRunPage);
     setPage(Page_Submit, new CSubmitPage);
     setPage(Page_Complete, new CCompletePage);
-    
+
     setWizardStyle(ModernStyle);
     setPixmap(QWizard::LogoPixmap, QPixmap(":/SandMan.png").scaled(64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
@@ -108,18 +108,18 @@ void CBoxAssistant::OnToggleDebugger()
         setWindowTitle(title.mid(0, title.indexOf(" - ")));
 }
 
-QList<QVariantMap> CBoxAssistant::GetIssues(const QVariantMap& Root) const 
-{ 
+QList<QVariantMap> CBoxAssistant::GetIssues(const QVariantMap& Root) const
+{
     QMap<QString, QList<QVariantMap>> GroupedIssues = theGUI->GetScripts()->GetIssues();
 
     if (Root.contains("id"))
-        return GroupedIssues.value(Root["id"].toString()); 
+        return GroupedIssues.value(Root["id"].toString());
 
     QString Class = Root["class"].toString();
     QList<QVariantMap> AllIssues;
     for (auto I = GroupedIssues.begin(); I != GroupedIssues.end(); ++I) {
         for(auto J = I->begin(); J != I->end(); ++J) {
-            if (J->value("type") == "issue" 
+            if (J->value("type") == "issue"
                 && (Class.isEmpty() || J->value("class").toString().compare(Class, Qt::CaseInsensitive) == 0))
                 AllIssues.append(*J);
         }
@@ -221,7 +221,7 @@ void CBoxAssistant::reject()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // CBeginPage
-// 
+//
 
 CBeginPage::CBeginPage(QWidget *parent)
     : QWizardPage(parent)
@@ -241,11 +241,11 @@ CBeginPage::CBeginPage(QWidget *parent)
 
     m_pLayout->addItem(new QSpacerItem(40, 10, QSizePolicy::Fixed, QSizePolicy::Fixed), row, 0);
     m_pLayout->addItem(new QSpacerItem(40, 10, QSizePolicy::Expanding, QSizePolicy::Fixed), row, 2);
-    
+
     setLayout(m_pLayout);
 }
 
-void CBeginPage::initializePage() 
+void CBeginPage::initializePage()
 {
     foreach(QWidget * pWidget, m_pWidgets)
         delete pWidget;
@@ -276,7 +276,7 @@ void CBeginPage::initializePage()
 
     m_pLayout->addItem(new QSpacerItem(10, 10, QSizePolicy::Fixed, QSizePolicy::Expanding), row++, 0);
 
-    if (!g_CertInfo.active || g_CertInfo.expired) {
+    if (0) { // cert check removed
         QLabel* pBottomLabel = new QLabel(tr("With a valid <a href=\"https://sandboxie-plus.com/go.php?to=sbie-cert\">supporter certificate</a> the wizard would be even more powerful. "
             "It could access the <a href=\"https://sandboxie-plus.com/go.php?to=sbie-issue-db\">online solution database</a> to retrieve the latest troubleshooting instructions."));
         connect(pBottomLabel, SIGNAL(linkActivated(const QString&)), theGUI, SLOT(OpenUrl(const QString&)));
@@ -310,7 +310,7 @@ bool CBeginPage::isComplete() const
      return true;
 }
 
-bool CBeginPage::validatePage() 
+bool CBeginPage::validatePage()
 {
     if (((CBoxAssistant*)wizard())->CurrentIssue().isEmpty()) {
         QVariantMap Issue;
@@ -323,7 +323,7 @@ bool CBeginPage::validatePage()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // CGroupPage
-// 
+//
 
 CGroupPage::CGroupPage(QWidget *parent)
     : QWizardPage(parent)
@@ -340,7 +340,7 @@ CGroupPage::CGroupPage(QWidget *parent)
     m_pTopLabel = new QLabel(tr("Please specify the exact issue:"));
     m_pTopLabel->setWordWrap(true);
     m_pLayout->addWidget(m_pTopLabel, row++, 0, 1, 2);
-    
+
     m_pGroup = new QButtonGroup();
     connect(m_pGroup, SIGNAL(idToggled(int, bool)), this, SIGNAL(completeChanged()));
 
@@ -360,7 +360,7 @@ void CGroupPage::initializePage()
     QVariantMap Group = ((CBoxAssistant*)wizard())->CurrentIssue();
 
     m_pTopLabel->setText(theGUI->GetScripts()->Tr(Group["description"].toString()));
-   
+
     //QLabel* pCommon = new QLabel(tr("Common Issues:"));
     //m_pLayout->addWidget(pCommon, row++, 0);
     //m_pWidgets.append(pCommon);
@@ -431,12 +431,12 @@ bool CGroupPage::isComplete() const
     return m_pGroup->checkedId() != -1;
 }
 
-bool CGroupPage::validatePage() 
+bool CGroupPage::validatePage()
 {
     if (QAbstractButton* pButton = m_pGroup->checkedButton()) {
         QVariantMap Issue = pButton->property("issue").toMap();
         QString type = Issue["type"].toString();
-        if (type == "group" || type == "list") 
+        if (type == "group" || type == "list")
             ((CBoxAssistant*)wizard())->setPage(CBoxAssistant::Page_Next + ++((CBoxAssistant*)wizard())->m_NextCounter, new CGroupPage());
         ((CBoxAssistant*)wizard())->PushIssue(Issue);
         return true;
@@ -446,7 +446,7 @@ bool CGroupPage::validatePage()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // CListPage
-// 
+//
 
 CListPage::CListPage(QWidget *parent)
     : QWizardPage(parent)
@@ -463,7 +463,7 @@ CListPage::CListPage(QWidget *parent)
     //QLabel* pTopLabel = new QLabel(tr("Please select an issue from the list"));
     //pTopLabel->setWordWrap(true);
     //m_pLayout->addWidget(pTopLabel, row++, 0, 1, 2);
-    
+
     m_pFilter = new QLineEdit();
     m_pFilter->setPlaceholderText(tr("Search filter"));
     m_pLayout->addWidget(m_pFilter, row++, 0, 1, 2);
@@ -574,7 +574,7 @@ bool CListPage::validatePage()
     if (QListWidgetItem* pItem = m_pList->currentItem()) {
         QVariantMap Issue = pItem->data(Qt::UserRole).toMap();
         QString type = Issue["type"].toString();
-        if (type == "group" || type == "list") 
+        if (type == "group" || type == "list")
             ((CBoxAssistant*)wizard())->setPage(CBoxAssistant::Page_Next + ++((CBoxAssistant*)wizard())->m_NextCounter, new CGroupPage());
         ((CBoxAssistant*)wizard())->PushIssue(Issue);
         return true;
@@ -584,7 +584,7 @@ bool CListPage::validatePage()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // CRunPage
-//  
+//
 
 CRunPage::CRunPage(QWidget *parent)
     : QWizardPage(parent)
@@ -666,36 +666,36 @@ void CRunPage::OnStateChanged(int state, const QString& Text)
                 if (type.compare("label", Qt::CaseInsensitive) == 0) {
                     pWidget = new QLabel(name);
                     pForm->addRow(pWidget);
-                } 
+                }
                 else if (type.compare("file", Qt::CaseInsensitive) == 0 || type.compare("folder", Qt::CaseInsensitive) == 0) {
                     CPathEdit* pPath = new CPathEdit(type.compare("folder", Qt::CaseInsensitive) == 0);
                     pWidget = pPath;
                     pPath->SetText(value.toString());
                     pForm->addRow(name, pPath);
-                } 
+                }
                 else if (type.compare("edit", Qt::CaseInsensitive) == 0) {
                     QLineEdit* pEdit = new QLineEdit();
                     pWidget = pEdit;
                     pEdit->setText(value.toString());
                     pEdit->setPlaceholderText(hint);
                     pForm->addRow(name, pEdit);
-                } 
+                }
                 else if (type.compare("check", Qt::CaseInsensitive) == 0) {
                     QCheckBox* pCheck = new QCheckBox(name);
                     pWidget = pCheck;
                     pCheck->setChecked(value.toBool());
                     pForm->addRow("", pCheck);
-                } 
+                }
                 else if (type.compare("radio", Qt::CaseInsensitive) == 0) {
                     QRadioButton* pRadio = new QRadioButton(name);
                     pWidget = pRadio;
                     pRadio->setChecked(value.toBool());
                     pForm->addRow("", pRadio);
-                    
+
                     // todo: add mandatory flag for other fields
                     bEnableNext = false; // user must make a choice
                     connect(pRadio, SIGNAL(toggled(bool)), this, SLOT(CheckUserInput()));
-                } 
+                }
                 else if (type.compare("box", Qt::CaseInsensitive) == 0) {
                     QString Name = name;
                     //if(!Name.isEmpty()) pForm->addRow(new QLabel(Name));
@@ -703,7 +703,7 @@ void CRunPage::OnStateChanged(int state, const QString& Text)
                     pPicker->setMaximumWidth(300);
                     pWidget = pPicker;
                     pForm->addRow(Name, pPicker);
-                } 
+                }
                 else if (type.compare("combo", Qt::CaseInsensitive) == 0) {
                     QComboBox* pCombo = new QComboBox();
                     pWidget = pCombo;
@@ -745,7 +745,7 @@ void CRunPage::CheckUserInput()
     wizard()->button(QWizard::NextButton)->setEnabled(true);
 }
 
-bool CRunPage::isComplete() const 
+bool CRunPage::isComplete() const
 {
     return true;
 }
@@ -805,7 +805,7 @@ bool CRunPage::validatePage()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // CSubmitPage
-// 
+//
 
 CSubmitPage::CSubmitPage(QWidget *parent)
     : QWizardPage(parent)
@@ -894,7 +894,7 @@ void CSubmitPage::initializePage()
         for (auto I = Values.begin(); I != Values.end(); ++I)
             Report += I.key() + ": " + I->toString() + "\n";
     }
-    
+
     m_pReport->setText(Report);
 
 
@@ -972,7 +972,7 @@ bool CSubmitPage::validatePage()
         SCompressParams Params;
         Params.iLevel = 9;
         Archive.Update(&Files, true, &Params);
-        
+
         if (pSbieLogs->open(QIODevice::ReadOnly)) {
 
             QHttpPart SbieLogs;
@@ -1068,7 +1068,7 @@ bool CSubmitPage::validatePage()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // CCompletePage
-// 
+//
 
 CCompletePage::CCompletePage(QWidget *parent)
     : QWizardPage(parent)
@@ -1083,7 +1083,7 @@ CCompletePage::CCompletePage(QWidget *parent)
 
     m_pLabel = new QLabel;
     m_pLabel->setWordWrap(true);
-    m_pLabel->setText(tr("Thank you for using the Troubleshooting Wizard for Sandboxie-Plus. We apologize for any inconvenience you experienced during the process. " 
+    m_pLabel->setText(tr("Thank you for using the Troubleshooting Wizard for Sandboxie-Plus. We apologize for any inconvenience you experienced during the process. "
         "If you have any additional questions or need further assistance, please don't hesitate to reach out. We're here to help. "
         "Thank you for your understanding and cooperation. \n\nYou can click Finish to close this wizard."));
     pLayout->addWidget(m_pLabel);

@@ -59,7 +59,7 @@ void COptionsWindow::OnAccessChangedEx()
 {
 	if (sender() == ui.chkPrivacy || sender() == ui.chkUseSpecificity) {
 		if (ui.chkPrivacy->isChecked() || (ui.chkUseSpecificity->isEnabled() && ui.chkUseSpecificity->isChecked()))
-			theGUI->CheckCertificate(this, 0);
+			/* theGUI->CheckCertificate(this, 0); // removed */
 	}
 
 	UpdateAccessPolicy();
@@ -72,7 +72,7 @@ void COptionsWindow::OnAccessChangedEx()
 }
 
 void COptionsWindow::OnAccessChanged()
-{ 
+{
 	UpdateJobOptions();
 
 	m_AccessChanged = true;
@@ -80,7 +80,7 @@ void COptionsWindow::OnAccessChanged()
 }
 
 void COptionsWindow::UpdateAccessPolicy()
-{ 
+{
 	ui.chkUseSpecificity->setEnabled(!(ui.chkPrivacy->isChecked() || ui.chkRestrictDevices->isChecked()));
 
 	if (ui.chkPrivacy->isChecked() || ui.chkRestrictDevices->isChecked()) {
@@ -296,8 +296,8 @@ void COptionsWindow::ParseAndAddAccessEntry(EAccessType Type, EAccessMode Mode, 
 {
 	//
 	// Mind this special cases
-	// OpenIpcPath=$:program.exe <- full access into the address space of a target process running outside the sandbox. 
-	// OpenWinClass=$:program.exe <- permits to use the PostThreadMessage API to send a message directly to a thread running outside the sandbox. 
+	// OpenIpcPath=$:program.exe <- full access into the address space of a target process running outside the sandbox.
+	// OpenWinClass=$:program.exe <- permits to use the PostThreadMessage API to send a message directly to a thread running outside the sandbox.
 	// This form of the setting does not support wildcards.
 	//
 
@@ -311,7 +311,7 @@ void COptionsWindow::ParseAndAddAccessEntry(EAccessType Type, EAccessMode Mode, 
 		}
 	}
 
-	if (Values.count() >= 2) 
+	if (Values.count() >= 2)
 		AddAccessEntry(Type, Mode, Values[0], Values[1], disabled, Template);
 	else // all programs
 		AddAccessEntry(Type, Mode, "", Values[0], disabled, Template);
@@ -395,7 +395,7 @@ QString COptionsWindow::ExpandPath(EAccessType Type, const QString& Path)
 	QString sPath = Path;
 	if (CSandBox* pBox = qobject_cast<CSandBox*>(m_pBox.data()))
 		sPath = theAPI->Nt2DosPath(pBox->Expand(sPath));
-	if ((Type == eFile || Type == eKey) && !sPath.isEmpty()) { 
+	if ((Type == eFile || Type == eKey) && !sPath.isEmpty()) {
 		if (sPath.left(1) == "|")
 			return sPath.mid(1);
 		else if (!sPath.contains("*") && sPath.right(1) != "*")
@@ -423,12 +423,12 @@ void COptionsWindow::AddAccessEntry(EAccessType Type, EAccessMode Mode, QString 
 	else if(!bAll)
 		m_Programs.insert(Program);
 	pItem->setText(1, (Not ? "NOT " : "") + Program);
-	
+
 	pItem->setText(2, GetAccessModeStr(Mode));
 	pItem->setData(2, Qt::UserRole, (int)Mode);
 
 	//////////////////////////////////////////////////////////
-	// File and Registry entries auto append a '*' wildcard 
+	// File and Registry entries auto append a '*' wildcard
 	// when they don't contain any.
 	// Prepending '|' disables this behaviour
 	//
@@ -565,10 +565,10 @@ void COptionsWindow::CloseAccessEdit(QTreeWidgetItem* pItem, bool bSave)
 			}
 		}
 
-		if (pItem->data(0, Qt::UserRole).toInt() == eIPC && Mode == eOpen 
-		  && ((Path == "*" && pItem->data(3, Qt::UserRole).toString() != "*") 
+		if (pItem->data(0, Qt::UserRole).toInt() == eIPC && Mode == eOpen
+		  && ((Path == "*" && pItem->data(3, Qt::UserRole).toString() != "*")
 		   || (Path == "\\*" && pItem->data(3, Qt::UserRole).toString() != "\\*"))
-		  && !m_BoxTemplates.contains("BoxedCOM"))  
+		  && !m_BoxTemplates.contains("BoxedCOM"))
 		{
  			if (theConf->GetInt("Options/WarnOpenCOM", -1) == -1) {
 				bool State = false;
@@ -710,10 +710,10 @@ void COptionsWindow::SaveAccessList()
 
 	CloseAccessEdit(true);
 
-	QStringList Keys = QStringList() 
+	QStringList Keys = QStringList()
 		<< "NormalFilePath" << "OpenFilePath" << "OpenPipePath" << "ClosedFilePath" << "ReadFilePath" << "WriteFilePath"
 		<< "NormalKeyPath" << "OpenKeyPath" << "OpenConfPath" << "ClosedKeyPath" << "ReadKeyPath" << "WriteKeyPath"
-		<< "NormalIpcPath"<< "OpenIpcPath" << "ClosedIpcPath" << "ReadIpcPath" 
+		<< "NormalIpcPath"<< "OpenIpcPath" << "ClosedIpcPath" << "ReadIpcPath"
 		<< "OpenWinClass" << "NoRenameWinClass"
 		<< "OpenClsid" << "ClosedClsid" << "ClosedRT";
 

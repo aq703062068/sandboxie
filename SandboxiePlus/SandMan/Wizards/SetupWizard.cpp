@@ -61,7 +61,7 @@ bool CSetupWizard::ShowWizard(int iOldLevel)
     CSetupWizard wizard(iOldLevel, theGUI);
     if (!theGUI->SafeExec(&wizard))
         return false;
-    
+
     if (iOldLevel < SETUP_LVL_1) {
         //bool useBusiness = wizard.field("useBusiness").toBool();
         //QString Certificate = wizard.field("useCertificate").toString();
@@ -132,7 +132,7 @@ bool CSetupWizard::ShowWizard(int iOldLevel)
     //if (wizard.field("isUpdate").toBool())
     //    theConf->SetValue("Options/CheckForUpdates", 1);
 
-    if (iOldLevel < SETUP_LVL_1) 
+    if (iOldLevel < SETUP_LVL_1)
     {
         if (wizard.field("editAdminOnly").toBool())
             theAPI->GetGlobalSettings()->SetText("EditAdminOnly", "y");
@@ -141,7 +141,7 @@ bool CSetupWizard::ShowWizard(int iOldLevel)
     theConf->SetValue("Options/WizardLevel", SETUP_LVL_CURRENT);
 
     theGUI->UpdateSettings(true);
-    
+
     return true;
 }
 
@@ -159,7 +159,7 @@ void CSetupWizard::ShellUninstall()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // CIntroPage
-// 
+//
 
 CIntroPage::CIntroPage(QWidget *parent)
     : QWizardPage(parent)
@@ -231,7 +231,7 @@ int CIntroPage::nextId() const
     return CSetupWizard::Page_UI;
 }
 
-bool CIntroPage::isComplete() const 
+bool CIntroPage::isComplete() const
 {
     if (m_pLabel->isEnabled() && !m_pPersonal->isChecked() && !m_pBusiness->isChecked())
         return false;
@@ -240,14 +240,14 @@ bool CIntroPage::isComplete() const
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // CCertificatePage
-// 
+//
 
 CCertificatePage::CCertificatePage(int iOldLevel, QWidget *parent)
     : QWizardPage(parent)
 {
     setTitle(tr("Install your <b>Sandboxie-Plus</b> support certificate"));
     setSubTitle(tr("If you have a supporter certificate, please fill it into the field below."));
-    
+
     if (iOldLevel < SETUP_LVL_1)
         m_NextPage = CSetupWizard::Page_UI;
     else if (iOldLevel < SETUP_LVL_3)
@@ -272,7 +272,7 @@ CCertificatePage::CCertificatePage(int iOldLevel, QWidget *parent)
     layout->addWidget(m_pCertificate);
     connect(m_pCertificate, SIGNAL(textChanged()), this, SIGNAL(completeChanged()));
     registerField("useCertificate", m_pCertificate, "plainText");
-    
+
     layout->addWidget(new QLabel(tr("Retrieve certificate using Serial Number:")));
 
     m_pSerial = new QLineEdit();
@@ -320,7 +320,7 @@ void CCertificatePage::initializePage()
 
         m_pEvaluate->setVisible(true);
     }
-    else 
+    else
     {
         if((UsageFlags & 1) != 0)
             UsageFlags |= 2;
@@ -346,7 +346,7 @@ int CCertificatePage::nextId() const
     return m_NextPage;
 }
 
-bool CCertificatePage::isComplete() const 
+bool CCertificatePage::isComplete() const
 {
     if (field("useBusiness").toBool())
     {
@@ -410,7 +410,7 @@ bool CCertificatePage::validatePage()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // CUIPage
-// 
+//
 
 CUIPage::CUIPage(QWidget* parent)
     : QWizardPage(parent)
@@ -478,8 +478,8 @@ CUIPage::CUIPage(QWidget* parent)
     setLayout(layout);
 }
 
-void CUIPage::initializePage() 
-{ 
+void CUIPage::initializePage()
+{
     QTimer::singleShot(10, this, SLOT(UpdatePreview()));
 }
 
@@ -525,7 +525,7 @@ int CUIPage::nextId() const
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // CShellPage
-// 
+//
 
 CShellPage::CShellPage(QWidget *parent)
     : QWizardPage(parent)
@@ -559,7 +559,7 @@ CShellPage::CShellPage(QWidget *parent)
     setLayout(layout);
 }
 
-void CShellPage::OnEditOnlyAdmin() 
+void CShellPage::OnEditOnlyAdmin()
 {
     if (m_pEditOnlyAdmin->isChecked()) {
         if (QMessageBox::warning(this, tr("Warning"), tr("Enabling this option prevents changes to the Sandboxie.ini configuration from the user interface without admin rights. Be careful, as using Sandboxie Manager with normal user rights may result in a lockout. "
@@ -578,7 +578,7 @@ int CShellPage::nextId() const
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // CWFPPage
-// 
+//
 
 /*CWFPPage::CWFPPage(QWidget *parent)
     : QWizardPage(parent)
@@ -614,7 +614,7 @@ int CWFPPage::nextId() const
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // CSBUpdate
-// 
+//
 
 CSBUpdate::CSBUpdate(QWidget *parent)
     : QWizardPage(parent)
@@ -719,7 +719,7 @@ void CSBUpdate::initializePage()
     m_pUpdate->setChecked(true);
     m_pStable->setChecked(true);
 
-    m_pBottomLabel->setVisible(!g_CertInfo.active || g_CertInfo.expired);
+    m_pBottomLabel->setVisible(false); // cert check removed
 
     UpdateOptions();
 }
@@ -755,7 +755,7 @@ int CSBUpdate::nextId() const
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // CFinishPage
-// 
+//
 
 CFinishPage::CFinishPage(QWidget *parent)
     : QWizardPage(parent)
@@ -776,7 +776,7 @@ CFinishPage::CFinishPage(QWidget *parent)
     //QWidget* pSpacer = new QWidget();
     //pSpacer->setMinimumHeight(16);
     //layout->addWidget(pSpacer);
-    
+
     //QLabel* pLabel = new QLabel;
     //pLabel->setWordWrap(true);
     //pLabel->setText(tr("Like with any other security product it's important to keep your Sandboxie-Plus up to date."));

@@ -312,7 +312,7 @@ QString CNewBoxWizard::GetDefaultLocation()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // CBoxTypePage
-// 
+//
 
 CBoxTypePage::CBoxTypePage(bool bAlowTemp, QWidget *parent)
     : QWizardPage(parent)
@@ -398,22 +398,22 @@ CBoxTypePage::CBoxTypePage(bool bAlowTemp, QWidget *parent)
         return pC;
     };
 
-    AddBoxType(tr("<a href=\"sbie://docs/security-mode\">Security Hardened</a> Sandbox with <a href=\"sbie://docs/privacy-mode\">Data Protection</a>"), (int)CSandBoxPlus::eHardenedPlus, 
+    AddBoxType(tr("<a href=\"sbie://docs/security-mode\">Security Hardened</a> Sandbox with <a href=\"sbie://docs/privacy-mode\">Data Protection</a>"), (int)CSandBoxPlus::eHardenedPlus,
         tr("This box type offers the highest level of protection by significantly reducing the attack surface exposed to sandboxed processes. \n"
             "It strictly limits access to user data, allowing processes within this box to only access C:\\Windows and C:\\Program Files directories. \n"
             "The entire user profile remains hidden, ensuring maximum security."));
-    AddBoxType(tr("<a href=\"sbie://docs/security-mode\">Security Hardened</a> Sandbox"), (int)CSandBoxPlus::eHardened, 
+    AddBoxType(tr("<a href=\"sbie://docs/security-mode\">Security Hardened</a> Sandbox"), (int)CSandBoxPlus::eHardened,
         tr("This box type offers the highest level of protection by significantly reducing the attack surface exposed to sandboxed processes."));
-    AddBoxType(tr("Sandbox with <a href=\"sbie://docs/privacy-mode\">Data Protection</a>"), (int)CSandBoxPlus::eDefaultPlus, 
+    AddBoxType(tr("Sandbox with <a href=\"sbie://docs/privacy-mode\">Data Protection</a>"), (int)CSandBoxPlus::eDefaultPlus,
         tr("In this box type, sandboxed processes are prevented from accessing any personal user files or data. The focus is on protecting user data, and as such, \n"
             "only C:\\Windows and C:\\Program Files directories are accessible to processes running within this sandbox. This ensures that personal files remain secure."));
-    AddBoxType(tr("Standard Sandbox"), (int)CSandBoxPlus::eDefault, 
+    AddBoxType(tr("Standard Sandbox"), (int)CSandBoxPlus::eDefault,
         tr("This box type offers the default behavior of Sandboxie classic. It provides users with a familiar and reliable sandboxing scheme. \n"
             "Applications can be run within this sandbox, ensuring they operate within a controlled and isolated space."));
-    AddBoxType(tr("<a href=\"sbie://docs/compartment-mode\">Application Compartment</a> Box with <a href=\"sbie://docs/privacy-mode\">Data Protection</a>"), (int)CSandBoxPlus::eAppBoxPlus, 
+    AddBoxType(tr("<a href=\"sbie://docs/compartment-mode\">Application Compartment</a> Box with <a href=\"sbie://docs/privacy-mode\">Data Protection</a>"), (int)CSandBoxPlus::eAppBoxPlus,
         tr("This box type prioritizes compatibility while still providing a good level of isolation. It is designed for running trusted applications within separate compartments. \n"
             "While the level of isolation is reduced compared to other box types, it offers improved compatibility with a wide range of applications, ensuring smooth operation within the sandboxed environment."));
-    AddBoxType(tr("<a href=\"sbie://docs/compartment-mode\">Application Compartment</a> Box"), (int)CSandBoxPlus::eAppBox, 
+    AddBoxType(tr("<a href=\"sbie://docs/compartment-mode\">Application Compartment</a> Box"), (int)CSandBoxPlus::eAppBox,
         tr("This box type prioritizes compatibility while still providing a good level of isolation. It is designed for running trusted applications within separate compartments. \n"
             "While the level of isolation is reduced compared to other box types, it offers improved compatibility with a wide range of applications, ensuring smooth operation within the sandboxed environment."));
 
@@ -495,15 +495,15 @@ void CBoxTypePage::initializePage()
     m_pAdvanced->setChecked(((CNewBoxWizard*)wizard())->m_bAdvanced);
 }
 
-void CBoxTypePage::setCurrentType(int type) 
+void CBoxTypePage::setCurrentType(int type)
 {
     if(m_TypeGroup->buttons().count() < type)
         m_TypeGroup->button(type)->setChecked(true);
 }
 
-int CBoxTypePage::currentType() 
-{ 
-    return m_TypeGroup->checkedId(); 
+int CBoxTypePage::currentType()
+{
+    return m_TypeGroup->checkedId();
 }
 
 void CBoxTypePage::OnBoxTypChanged()
@@ -519,7 +519,7 @@ void CBoxTypePage::OnBoxTypChanged()
 #endif
 
     if(BoxType != CSandBoxPlus::eDefault || BlackBox)
-		theGUI->CheckCertificate(this, BlackBox ? 1 : 0);
+		/* theGUI->CheckCertificate(this, BlackBox ? 1 : 0); // removed */
 
     emit completeChanged();
 }
@@ -590,7 +590,7 @@ bool CBoxTypePage::validatePage()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // CFilesPage
-// 
+//
 
 CFilesPage::CFilesPage(QWidget *parent)
     : QWizardPage(parent)
@@ -686,9 +686,9 @@ void CFilesPage::initializePage()
     m_pBoxLocation->clear();
     QString Location = theAPI->GetGlobalSettings()->GetText("FileRootPath", "\\??\\%SystemDrive%\\Sandbox\\%USER%\\%SANDBOX%");
     m_pBoxLocation->addItem(Location/*.replace("%SANDBOX%", field("boxName").toString())*/);
-    QStringList StdLocations = QStringList() 
-        << "\\??\\%SystemDrive%\\Sandbox\\%USER%\\%SANDBOX%" 
-        << "\\??\\%SystemDrive%\\Sandbox\\%SANDBOX%" 
+    QStringList StdLocations = QStringList()
+        << "\\??\\%SystemDrive%\\Sandbox\\%USER%\\%SANDBOX%"
+        << "\\??\\%SystemDrive%\\Sandbox\\%SANDBOX%"
         << "\\??\\%SystemDrive%\\Users\\%USER%\\Sandbox\\%SANDBOX%";
     foreach(auto StdLocation, StdLocations) {
         if (StdLocation != Location)
@@ -733,7 +733,7 @@ bool CFilesPage::validatePage()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // CIsolationPage
-// 
+//
 
 CIsolationPage::CIsolationPage(QWidget *parent)
     : QWizardPage(parent)
@@ -754,7 +754,7 @@ CIsolationPage::CIsolationPage(QWidget *parent)
     QComboBox* pNetAccess = new QComboBox();
     pNetAccess->addItem(tr("Allow network/internet access"));
 	pNetAccess->addItem(tr("Block network/internet by denying access to Network devices"));
-	if (theGUI->IsWFPEnabled()) 
+	if (theGUI->IsWFPEnabled())
         pNetAccess->addItem(tr("Block network/internet using Windows Filtering Platform"));
     pNetAccess->setCurrentIndex(theConf->GetInt("BoxDefaults/BlockNetwork", 0));
     layout->addWidget(pNetAccess, row++, 1, 1, 3);
@@ -877,7 +877,7 @@ void CIsolationPage::OnBlockNetworkChanged(int index) {
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // CAdvancedPage
-// 
+//
 
 CAdvancedPage::CAdvancedPage(QWidget *parent)
     : QWizardPage(parent)
@@ -898,7 +898,7 @@ CAdvancedPage::CAdvancedPage(QWidget *parent)
     QCheckBox* pImageProtection = new QCheckBox(tr("Prevent sandboxed programs on the host from loading sandboxed DLLs"));
     pImageProtection->setToolTip(tr("This feature may reduce compatibility as it also prevents box located processes from writing to host located ones and even starting them."));
     pImageProtection->setChecked(theConf->GetBool("BoxDefaults/ImagesProtection", false));
-    pImageProtection->setEnabled(g_CertInfo.active);
+    pImageProtection->setEnabled(true); // cert check removed
     layout->addWidget(pImageProtection, row++, 1, 1, 3);
     registerField("imagesProtection", pImageProtection);
 
@@ -1015,7 +1015,7 @@ bool CAdvancedPage::validatePage()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // CSummaryPage
-// 
+//
 
 CSummaryPage::CSummaryPage(QWidget *parent)
     : QWizardPage(parent)
@@ -1072,7 +1072,7 @@ void CSummaryPage::initializePage()
         Location = ((CNewBoxWizard*)wizard())->GetDefaultLocation();
     m_pSummary->append(tr("\nThis Sandbox will be saved to: %1").arg(Location));
 
-    if (field("autoRemove").toBool()) 
+    if (field("autoRemove").toBool())
         m_pSummary->append(tr("\nThis box's content will be DISCARDED when it's closed, and the box will be removed."));
     else if (field("autoDelete").toBool())
         m_pSummary->append(tr("\nThis box will DISCARD its content when it's closed, it's suitable only for temporary data."));

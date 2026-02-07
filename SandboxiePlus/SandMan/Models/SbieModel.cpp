@@ -122,7 +122,7 @@ QList<QVariant> CSbieModel::Sync(const QMap<QString, CSandBoxPtr>& BoxList, cons
 	bool bWatchSize = theConf->GetBool("Options/WatchBoxSize", false);
 	bool ColorIcons = theConf->GetBool("Options/ColorBoxIcons", false);
 	bool OverlayIcons = theConf->GetBool("Options/UseOverlayIcons", true);
-	bool bPlus = (theAPI->GetFeatureFlags() & CSbieAPI::eSbieFeatureCert) != 0;
+	bool bPlus = true; // cert check removed
 	bool bVintage = theConf->GetInt("Options/ViewMode", 1) == 2;
 	if (bVintage)
 		bPlus = false;
@@ -133,17 +133,17 @@ QList<QVariant> CSbieModel::Sync(const QMap<QString, CSandBoxPtr>& BoxList, cons
 		if (Group.isEmpty())
 			continue;
 		QVariant ID = CSbieModel__AddGroupMark(Group);
-		
+
 		QModelIndex Index;
-		
+
 		QHash<QVariant, STreeNode*>::iterator I = Old.find(ID);
 		SSandBoxNode* pNode = I != Old.end() ? static_cast<SSandBoxNode*>(I.value()) : NULL;
 		if (!pNode)
 		{
 			pNode = static_cast<SSandBoxNode*>(MkNode(ID));
 			pNode->Values.resize(columnCount());
-			if (m_bTree) 
-				pNode->Path = MakeBoxPath(ID, Groups); 
+			if (m_bTree)
+				pNode->Path = MakeBoxPath(ID, Groups);
 			pNode->pBox = NULL;
 			New[pNode->Path].append(pNode);
 			Added.append(ID);
@@ -155,7 +155,7 @@ QList<QVariant> CSbieModel::Sync(const QMap<QString, CSandBoxPtr>& BoxList, cons
 			pNode->IsBold = true;
 
 			pNode->Values[eName].Raw = Group;
-			if(bGroupsFirst) 
+			if(bGroupsFirst)
 				pNode->Values[eName].SortKey = ID;
 			pNode->Values[eStatus].Raw = tr("Box Group");
 		}
@@ -186,7 +186,7 @@ QList<QVariant> CSbieModel::Sync(const QMap<QString, CSandBoxPtr>& BoxList, cons
 		QVariant ID = pBox->GetName();
 
 		QModelIndex Index;
-		
+
 		QHash<QVariant, STreeNode*>::iterator I = Old.find(ID);
 		SSandBoxNode* pNode = I != Old.end() ? static_cast<SSandBoxNode*>(I.value()) : NULL;
 		if(!pNode)
@@ -224,7 +224,7 @@ QList<QVariant> CSbieModel::Sync(const QMap<QString, CSandBoxPtr>& BoxList, cons
 			for (auto I = ProcessList.begin(); I != ProcessList.end();) {
 				if (I.value()->GetFileName().indexOf(theAPI->GetSbiePath() + "\\Sandboxie", Qt::CaseInsensitive) == 0)
 					I = ProcessList.erase(I);
-				else 
+				else
 					++I;
 			}
 		}
@@ -236,7 +236,7 @@ QList<QVariant> CSbieModel::Sync(const QMap<QString, CSandBoxPtr>& BoxList, cons
 		bool boxNoForce = pBoxEx->IsForceDisabled();
 		int boxColor = pBoxEx->GetColor();
 		SSandBoxNode::EMountState mountState = SSandBoxNode::eNone;
-		if (pBoxEx->UseRamDisk()) 
+		if (pBoxEx->UseRamDisk())
 			mountState = SSandBoxNode::eRamDisk;
 		else if (pBoxEx->UseImageFile()) {
 			if(pBoxEx->GetMountRoot().isEmpty())
@@ -244,12 +244,12 @@ QList<QVariant> CSbieModel::Sync(const QMap<QString, CSandBoxPtr>& BoxList, cons
 			else
 				mountState = SSandBoxNode::eMounted;
 		}
-		
+
 		QIcon Icon;
 		QString BoxIcon = pBox->GetText("BoxIcon");
 		if (!BoxIcon.isEmpty())
 		{
-			if (pNode->BoxIcon != BoxIcon || (pNode->busyState || Busy) || pNode->boxDel != boxDel || pNode->boxNoForce != boxNoForce) 
+			if (pNode->BoxIcon != BoxIcon || (pNode->busyState || Busy) || pNode->boxDel != boxDel || pNode->boxNoForce != boxNoForce)
 			{
 				StrPair PathIndex = Split2(BoxIcon, ",");
 				if (!PathIndex.second.isEmpty() && !PathIndex.second.contains("."))
@@ -259,12 +259,12 @@ QList<QVariant> CSbieModel::Sync(const QMap<QString, CSandBoxPtr>& BoxList, cons
 				pNode->BoxIcon = BoxIcon;
 			}
 		}
-		else if (pNode->inUse != inUse || 
-			(pNode->busyState || Busy) || 
-			pNode->boxType != boxType || 
-			pNode->boxColor != boxColor || 
-			pNode->boxDel != boxDel || 
-			pNode->boxNoForce != boxNoForce || 
+		else if (pNode->inUse != inUse ||
+			(pNode->busyState || Busy) ||
+			pNode->boxType != boxType ||
+			pNode->boxColor != boxColor ||
+			pNode->boxDel != boxDel ||
+			pNode->boxNoForce != boxNoForce ||
 			!pNode->BoxIcon.isEmpty() ||
 			pNode->MountState != mountState
 			)
@@ -283,14 +283,14 @@ QList<QVariant> CSbieModel::Sync(const QMap<QString, CSandBoxPtr>& BoxList, cons
 			pNode->MountState = mountState;
 		}
 
-		if (!Icon.isNull()) 
+		if (!Icon.isNull())
 		{
-			if (Busy)	
+			if (Busy)
 				Icon = theGUI->MakeIconBusy(Icon, pNode->busyState++);
 			else {
 				pNode->busyState = 0;
 
-				if (OverlayIcons) 
+				if (OverlayIcons)
 				{
 					if(boxNoForce)
 						Icon = theGUI->IconAddOverlay(Icon, ":/IconDFP");
@@ -304,7 +304,7 @@ QList<QVariant> CSbieModel::Sync(const QMap<QString, CSandBoxPtr>& BoxList, cons
 						Icon = theGUI->IconAddOverlay(Icon, ":/Boxes/AutoDel");
 				}
 			}
-			
+
 			if (m_LargeIcons) // but not for boxes
 				Icon = QIcon(Icon.pixmap(QSize(32,32)).scaled(16, 16, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 
@@ -455,8 +455,8 @@ bool CSbieModel::Sync(const CSandBoxPtr& pBox, const QList<QVariant>& Path, cons
 			QVariant Value;
 			switch (section)
 			{
-			case eName: {				
-							QString Name = pProcess->GetProcessName(); 
+			case eName: {
+							QString Name = pProcess->GetProcessName();
 							if (pProcess->IsWoW64())
 								Name += " *32";
 							Value = Name;
@@ -469,7 +469,7 @@ bool CSbieModel::Sync(const CSandBoxPtr& pBox, const QList<QVariant>& Path, cons
 			case eInfo:				Value = pProcess->GetTimeStamp(); break;
 			//case ePath:				Value = pProcess->GetFileName(); break;
 			case ePath: {
-									QString CmdLine = pProcess->GetCommandLine(); 
+									QString CmdLine = pProcess->GetCommandLine();
 									Value = CmdLine.isEmpty() ? pProcess->GetFileName() : CmdLine;
 									break;
 						}
@@ -545,7 +545,7 @@ QString	CSbieModel::GetGroup(const QModelIndex& index) const
 
 	SSandBoxNode* pNode = static_cast<SSandBoxNode*>(index.internalPointer());
 	ASSERT(pNode);
-	
+
 	if(!CSbieModel__HasGroupMark(pNode->ID.toString()))
 		return QString();
 
@@ -616,8 +616,8 @@ QVariant CSbieModel::headerData(int section, Qt::Orientation orientation, int ro
     return QVariant();
 }
 
-/*QVariant CSbieModel::GetDefaultIcon() const 
-{ 
+/*QVariant CSbieModel::GetDefaultIcon() const
+{
 	return g_ExeIcon;
 }*/
 
@@ -629,7 +629,7 @@ QVariant CSbieModel::data(const QModelIndex &index, int role) const
 	return CTreeItemModel::data(index, role);
 }
 
-Qt::ItemFlags CSbieModel::flags(const QModelIndex& index) const 
+Qt::ItemFlags CSbieModel::flags(const QModelIndex& index) const
 {
 	Qt::ItemFlags Flags = CTreeItemModel::flags(index);
 

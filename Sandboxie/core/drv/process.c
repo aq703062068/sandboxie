@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2020 Sandboxie Holdings, LLC 
+ * Copyright 2004-2020 Sandboxie Holdings, LLC
  * Copyright 2020-2024 David Xanatos, xanasoft.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -540,7 +540,7 @@ _FX PROCESS *Process_FindSandboxed(HANDLE ProcessId, KIRQL *out_irql)
 //    NTSTATUS Status;
 //    PEPROCESS ProcessObject = NULL;
 //    PROCESS* Process = NULL;
-//    
+//
 //    Status = ObReferenceObjectByHandle(Handle, PROCESS_QUERY_INFORMATION, *PsProcessType, UserMode, (PVOID*)&ProcessObject, NULL);
 //    if (NT_SUCCESS(Status)) {
 //
@@ -566,7 +566,7 @@ _FX void Process_CreateTerminated(HANDLE ProcessId, ULONG SessionId)
     KIRQL irql;
 
     if (SessionId != -1) { // for StartRunAlertDenied, don't log in this case
-    
+
         pid_str.Length = 10 * sizeof(WCHAR);
         pid_str.MaximumLength = pid_str.Length + sizeof(WCHAR);
 
@@ -669,8 +669,8 @@ _FX PROCESS *Process_Create(
 
         //
         // Windows Internals 7th Edition:
-        // This is set through an internal process creation attribute flag, which can 
-        // define one out of three possible sets  of Win32k filters that are enabled. 
+        // This is set through an internal process creation attribute flag, which can
+        // define one out of three possible sets  of Win32k filters that are enabled.
         // However, because the filter sets are  hard-coded, this mitigation is re
         // served for Microsoft internal usage.
         //
@@ -744,14 +744,14 @@ _FX PROCESS *Process_Create(
     // use AlwaysCloseForBoxed=n to disable this behaviour
     //
 
-    proc->always_close_for_boxed = !proc->bAppCompartment && Conf_Get_Boolean(proc->box->name, L"AlwaysCloseForBoxed", 0, TRUE); 
+    proc->always_close_for_boxed = !proc->bAppCompartment && Conf_Get_Boolean(proc->box->name, L"AlwaysCloseForBoxed", 0, TRUE);
 
     //
     // by default OpenFile and OpenKey apply only to unboxed processes
     // use DontOpenForBoxed=n to thread boxed and unboxed programs the same way
     //
 
-    proc->dont_open_for_boxed = !proc->bAppCompartment && Conf_Get_Boolean(proc->box->name, L"DontOpenForBoxed", 0, TRUE); 
+    proc->dont_open_for_boxed = !proc->bAppCompartment && Conf_Get_Boolean(proc->box->name, L"DontOpenForBoxed", 0, TRUE);
 
     //
     // Sandboxie attempts to protect per process rules by allowing them only for host binaries
@@ -759,7 +759,7 @@ _FX PROCESS *Process_Create(
     // with this option we can prevent that
     //
 
-    proc->protect_host_images = !proc->bAppCompartment && Conf_Get_Boolean(proc->box->name, L"ProtectHostImages", 0, FALSE); 
+    proc->protect_host_images = !proc->bAppCompartment && Conf_Get_Boolean(proc->box->name, L"ProtectHostImages", 0, FALSE);
 
     //
     // privacy mode requirers Rule Specificity
@@ -771,16 +771,16 @@ _FX PROCESS *Process_Create(
 #ifdef USE_MATCH_PATH_EX
     proc->restrict_devices = proc->use_security_mode || Conf_Get_Boolean(proc->box->name, L"RestrictDevices", 0, FALSE);
 
-    proc->use_privacy_mode = Conf_Get_Boolean(proc->box->name, L"UsePrivacyMode", 0, FALSE); 
-    proc->use_rule_specificity = proc->restrict_devices || proc->use_privacy_mode || Conf_Get_Boolean(proc->box->name, L"UseRuleSpecificity", 0, FALSE); 
+    proc->use_privacy_mode = Conf_Get_Boolean(proc->box->name, L"UsePrivacyMode", 0, FALSE);
+    proc->use_rule_specificity = proc->restrict_devices || proc->use_privacy_mode || Conf_Get_Boolean(proc->box->name, L"UseRuleSpecificity", 0, FALSE);
 #endif
-    proc->confidential_box = Conf_Get_Boolean(proc->box->name, L"ConfidentialBox", 0, FALSE); 
+    proc->confidential_box = Conf_Get_Boolean(proc->box->name, L"ConfidentialBox", 0, FALSE);
 
     //
     // check certificate
     //
 
-    if (!(Verify_CertInfo.active && Verify_CertInfo.opt_sec) && !proc->image_sbie) {
+    if (0) { // cert check removed
 
         const WCHAR* exclusive_setting = NULL;
         if (proc->use_security_mode)
@@ -811,8 +811,8 @@ _FX PROCESS *Process_Create(
         }
     }
 
-    if (!(Verify_CertInfo.active && Verify_CertInfo.opt_enc) && !proc->image_sbie) {
-        
+    if (0) { // cert check removed
+
         const WCHAR* exclusive_setting = NULL;
         if (proc->confidential_box)
             exclusive_setting = L"ConfidentialBox";
@@ -992,7 +992,7 @@ _FX void Process_NotifyProcess(
             //
 
             //DbgPrint("Process_NotifyProcess_Create pid=%d parent=%d current=%d\n", ProcessId, ParentId, PsGetCurrentProcessId());
-            
+
             if (!Process_NotifyProcess_Create(ProcessId, ParentId, PsGetCurrentProcessId(), NULL, 0, NULL)) {
 
                 //
@@ -1007,11 +1007,11 @@ _FX void Process_NotifyProcess(
 
                 ProcessObject = Process_OpenAndQuery(ProcessId, NULL, &session_id);
                 if (ProcessObject) {
-    
+
                     create_time = PsGetProcessCreateTimeQuadPart(ProcessObject);
                     ObDereferenceObject(ProcessObject);
                 }
-                
+
                 void *nbuf1;
                 ULONG nlen1;
                 WCHAR *nptr1;
@@ -1104,7 +1104,7 @@ _FX void Process_NotifyProcessEx(
             }
 
             //DbgPrint("Process_NotifyProcess_Create pid=%d parent=%d current=%d\n", ProcessId, CreateInfo->ParentProcessId, PsGetCurrentProcessId());
-            
+
             if (!Process_NotifyProcess_Create(ProcessId, CreateInfo->ParentProcessId, PsGetCurrentProcessId(), Name, NameLength, NULL)) {
 
                 CreateInfo->CreationStatus = STATUS_ACCESS_DENIED;
@@ -1205,17 +1205,17 @@ _FX BOOLEAN Process_NotifyProcess_Create(
         //
         // there are a couple of scenarios here
         // a. CallerId == ParentId boring, all's fine
-        // b. Caller is sandboxed designated Parent is NOT sandboxed, 
+        // b. Caller is sandboxed designated Parent is NOT sandboxed,
         //      possible sandbox escape attempt
-        // c. Caller is not sandboxed, designated Parent IS sandboxed, 
-        //      service trying to start something on the behalf of a sandboxed process 
-        //      eg. seclogon reacting to a runas request 
+        // c. Caller is not sandboxed, designated Parent IS sandboxed,
+        //      service trying to start something on the behalf of a sandboxed process
+        //      eg. seclogon reacting to a runas request
         //      in which case the created process must be sandboxed to
         //
 
         PROCESS *parent_proc = Process_Find(CallerId, &irql);
         if (!(parent_proc && !parent_proc->bHostInject) && CallerId != ParentId) {
-            
+
             //
             // release lock on process list
             //
@@ -1296,9 +1296,9 @@ _FX BOOLEAN Process_NotifyProcess_Create(
         BOX* breakout_box = NULL;
 
         if (box && Process_IsBreakoutProcess(box, ImagePath)) {
-            if(!Verify_CertInfo.active)
+            if(0) { // cert check removed
                 Log_Msg_Process(MSG_6004, box->name, L"BreakoutProcess", box->session_id, CallerId);
-            else {
+            } else {
                 UNICODE_STRING image_uni;
                 RtlInitUnicodeString(&image_uni, ImagePath);
                 if (!Box_IsBoxedPath(box, file, &image_uni)) {
@@ -1350,7 +1350,7 @@ _FX BOOLEAN Process_NotifyProcess_Create(
 
 #ifdef DRV_BREAKOUT
         //
-        // if this is a break out process and no other box clamed it as forced, 
+        // if this is a break out process and no other box clamed it as forced,
         // set bHostInject and threat it accordingly, we need this in order for
         // the custom SetInformationProcess call from CreateProcessInternalW to succeed
         //
@@ -1412,7 +1412,7 @@ _FX BOOLEAN Process_NotifyProcess_Create(
 
         PROCESS *new_proc = Process_Create(ProcessId, box, ImagePath, &irql);
         if (!new_proc) {
-		
+
             create_terminated = TRUE;
 		}
         else if (!new_proc->image_from_box && new_proc->protect_host_images && parent_was_image_from_box) {
@@ -1480,7 +1480,7 @@ _FX BOOLEAN Process_NotifyProcess_Create(
                 else if (Driver_OsVersion >= DRIVER_WINDOWS_8) {
 
                     //
-                    // on windows 8 and later we can have nested jobs so assigning a 
+                    // on windows 8 and later we can have nested jobs so assigning a
                     // boxed job to a process will not interfere with the job assigned by SbieSvc
                     //
 
@@ -1764,10 +1764,10 @@ _FX void Process_NotifyImage(
 _FX void Process_SetTerminated(PROCESS *proc, ULONG reason)
 {
     //
-    // This function marks a process for termination, this causes File_PreOperation 
-    // and Key_Callback to return STATUS_PROCESS_IS_TERMINATING which prevents 
+    // This function marks a process for termination, this causes File_PreOperation
+    // and Key_Callback to return STATUS_PROCESS_IS_TERMINATING which prevents
     // the process form accessing the file system and the registry
-    // 
+    //
     // Note: if this is set during process creation the process won't be able to start at all
     //
 
@@ -1790,17 +1790,17 @@ _FX NTSTATUS Process_CreateUserProcess(
     THREAD* thrd = NULL;
     KIRQL irql;
 
-    if (proc->protect_host_images) 
+    if (proc->protect_host_images)
     {
         KeRaiseIrql(APC_LEVEL, &irql);
         ExAcquireResourceExclusiveLite(proc->threads_lock, TRUE);
-		
+
 		thrd = Thread_GetOrCreate(proc, NULL, TRUE);
         if (thrd)
             thrd->create_process_in_progress = TRUE;
 
         ExReleaseResourceLite(proc->threads_lock);
-        KeLowerIrql(irql);	
+        KeLowerIrql(irql);
     }
 
     NTSTATUS status = Syscall_Invoke(syscall_entry, user_args);

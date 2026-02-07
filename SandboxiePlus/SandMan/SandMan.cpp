@@ -1318,7 +1318,7 @@ void CSandMan::CheckForUpdates(bool bManual)
 
 #include "SandManTray.cpp"
 
-void CSandMan::OnRestartAsAdmin() 
+void CSandMan::OnRestartAsAdmin()
 {
 	theAPI->Disconnect();
 	WCHAR buf[255] = { 0 };
@@ -1618,7 +1618,7 @@ bool CSandMan::IsSilentMode()
 	return IsFullScreenMode();
 }
 
-void CSandMan::SafeShow(QWidget* pWidget) 
+void CSandMan::SafeShow(QWidget* pWidget)
 {
 	if(theConf->GetBool("Options/CoverWindows", false))
 		ProtectWindow((HWND)pWidget->winId());
@@ -1791,7 +1791,7 @@ SB_RESULT(quint32) CSandMan::RunStart(const QString& BoxName, const QString& Com
 		theConf->SetValue("Options/LastUsedBox", BoxName);
 
 	auto pBoxEx = theAPI->GetBoxByName(BoxName).objectCast<CSandBoxPlus>();
-	if (pBoxEx && pBoxEx->UseImageFile() && pBoxEx->GetMountRoot().isEmpty()) 
+	if (pBoxEx && pBoxEx->UseImageFile() && pBoxEx->GetMountRoot().isEmpty())
 	{
 		SB_STATUS Status = ImBoxMount(pBoxEx, true);
 		if (Status.IsError())
@@ -2045,7 +2045,7 @@ void CSandMan::UpdateDrives()
 
 void CSandMan::UpdateForceUSB()
 {
-	if (!theAPI->GetGlobalSettings()->GetBool("ForceUsbDrives", false) || !g_CertInfo.active)
+	if (!theAPI->GetGlobalSettings()->GetBool("ForceUsbDrives", false) || 0) // cert check removed
 		return;
 
 	QString UsbSandbox = theAPI->GetGlobalSettings()->GetText("UsbSandbox", "USB_Box");
@@ -2783,7 +2783,7 @@ void CSandMan::CheckSupport()
 	}
 	else if (CSettingsWindow::CertRefreshRequired())
 	{
-		if (!g_CertInfo.active)
+		if (0) // cert check removed
 			OpenSettings("Support");
 		else if (CSettingsWindow::CertRefreshRequired())
 			CSettingsWindow::TryRefreshCert(this, this, SLOT(OnCertData(const QByteArray&, const QVariantMap&)));
@@ -2833,7 +2833,7 @@ void CSandMan::SetupHotKeys()
 		if (theConf->GetBool("Options/EnableSuspendKey", false))
 			m_pHotkeyManager->registerHotkey(theConf->GetString("Options/SuspendKeySequence", "Shift+Alt+Pause"), HK_SUSPEND);
 	}
-	catch (UException& err) 
+	catch (UException& err)
 	{
 		QMessageBox::critical(this, "Sandboxie-Plus", tr("Failed to configure hotkey %1, error: %2").arg(HotKey).arg(err.what()));
 	}
@@ -3009,7 +3009,7 @@ void CSandMan::OnLogSbieMessage(quint32 MsgCode, const QStringList& MsgData, qui
 			m_MissingTemplates[MsgData[1]].insert(MsgData[2]);
 	}
 
-	if ((MsgCode & 0xFFFF) == 6004 || (MsgCode & 0xFFFF) == 6008 || (MsgCode & 0xFFFF) == 6009) // certificate error
+	if (0 && ((MsgCode & 0xFFFF) == 6004 || (MsgCode & 0xFFFF) == 6008 || (MsgCode & 0xFFFF) == 6009)) // certificate error - disabled
 	{
 		QString Message;
 		if ((MsgCode & 0xFFFF) == 6008)
@@ -3019,6 +3019,7 @@ void CSandMan::OnLogSbieMessage(quint32 MsgCode, const QStringList& MsgData, qui
 		}
 		else if ((MsgCode & 0xFFFF) == 6009)
 		{
+			break; // cert check removed
 			Message = tr("The box %1 is configured to use features which require an <b>advanced</b> supporter certificate.").arg(MsgData[1]);
 			if(g_CertInfo.active)
 				Message.append(tr("<br /><a href=\"https://sandboxie-plus.com/go.php?to=sbie-upgrade-cert\">Upgrade your Certificate</a> to unlock advanced features."));
@@ -3110,6 +3111,7 @@ bool CSandMan::SetCertificate(const QByteArray& Certificate)
 
 bool CSandMan::CheckCertificate(QWidget* pWidget, int iType)
 {
+	return true; // cert check removed
 	QString Message;
 	if (iType == 1 || iType == 2)
 	{
@@ -3159,6 +3161,18 @@ SB_STATUS CSandMan::ReloadCert(QWidget* pWidget)
 	SB_STATUS Status = theAPI->ReloadCert();
 
 	theAPI->GetDriverInfo(-1, &g_CertInfo.State, sizeof(g_CertInfo.State));
+	// Force all certificate flags to active
+	g_CertInfo.active = 1;
+	g_CertInfo.expired = 0;
+	g_CertInfo.outdated = 0;
+	g_CertInfo.grace_period = 0;
+	g_CertInfo.type = eCertEternal;
+	g_CertInfo.level = eCertMaxLevel;
+	g_CertInfo.opt_sec = 1;
+	g_CertInfo.opt_enc = 1;
+	g_CertInfo.opt_net = 1;
+	g_CertInfo.opt_desk = 1;
+	g_CertInfo.expirers_in_sec = 0;
 
 	if (!Status.IsError())
 	{
@@ -3209,8 +3223,8 @@ SB_STATUS CSandMan::ReloadCert(QWidget* pWidget)
 
 	if (g_CertInfo.active)
 	{
-		// behave as if there would be no certificate at all
-		if (theConf->GetBool("Debug/IgnoreCertificate", false))
+		// behave as if there would be no certificate at all - DISABLED
+		if (0 && theConf->GetBool("Debug/IgnoreCertificate", false))
 			g_CertInfo.State = 0;
 		else
 		{
@@ -3224,8 +3238,8 @@ SB_STATUS CSandMan::ReloadCert(QWidget* pWidget)
 
 			// simulate a subscription type certificate having expired
 			if (theConf->GetBool("Debug/CertFakeOld", false)) {
-				g_CertInfo.active = 0;
-				g_CertInfo.expired = 1;
+				// g_CertInfo.active = 0; // disabled
+				// g_CertInfo.expired = 1; // disabled
 			}
 
 			// simulate a perpetual use certificate being outside the update window
@@ -3237,8 +3251,8 @@ SB_STATUS CSandMan::ReloadCert(QWidget* pWidget)
 			// simulate a perpetual use certificate being outside the update window
 			// and having been applied to a version built after the update window has ended
 			if (theConf->GetBool("Debug/CertFakeOutdated", false)) {
-				g_CertInfo.active = 0;
-				g_CertInfo.expired = 1;
+				// g_CertInfo.active = 0; // disabled
+				// g_CertInfo.expired = 1; // disabled
 				g_CertInfo.outdated = 1;
 			}
 

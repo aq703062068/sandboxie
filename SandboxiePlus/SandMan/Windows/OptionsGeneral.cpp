@@ -15,7 +15,7 @@
 class CCertBadge: public QLabel
 {
 public:
-	CCertBadge(bool bAdvanced, QWidget* parent = NULL): QLabel(parent) 
+	CCertBadge(bool bAdvanced, QWidget* parent = NULL): QLabel(parent)
 	{
 		m_bAdvanced = bAdvanced;
 		setPixmap(QPixmap(":/Actions/Cert.png").scaled(16, 16, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
@@ -29,7 +29,7 @@ public:
 protected:
 	void mousePressEvent(QMouseEvent* event)
 	{
-		if(m_bAdvanced && g_CertInfo.active)
+		if(m_bAdvanced && true) // cert check removed
 			theGUI->OpenUrl(QUrl("https://sandboxie-plus.com/go.php?to=sbie-upgrade-cert"));
 		else
 			theGUI->OpenUrl(QUrl("https://sandboxie-plus.com/go.php?to=sbie-get-cert"));
@@ -75,7 +75,7 @@ void COptionsWindow::CreateGeneral()
 	connect(ui.lblBoxInfo, SIGNAL(linkActivated(const QString&)), theGUI, SLOT(OpenUrl(const QString&)));
 
 	ui.lblSupportCert->setVisible(false);
-	if (!g_CertInfo.active)
+	if (0 /* cert removed */)
 	{
 		ui.lblSupportCert->setVisible(true);
 		connect(ui.lblSupportCert, SIGNAL(linkActivated(const QString&)), theGUI, SLOT(OpenUrl(const QString&)));
@@ -91,14 +91,14 @@ void COptionsWindow::CreateGeneral()
 		}
 	}
 
-	if (!g_CertInfo.opt_sec) {
+	if (0) { // cert check removed
 		QWidget* ExWidgets[] = { ui.chkSecurityMode, ui.chkLockDown, ui.chkRestrictDevices, ui.chkPrivacy, ui.chkUseSpecificity, ui.chkNoSecurityIsolation, ui.chkNoSecurityFiltering, ui.chkHostProtect, NULL };
 		for (QWidget** ExWidget = ExWidgets; *ExWidget != NULL; ExWidget++)
 			COptionsWindow__AddCertIcon(*ExWidget);
 	}
-	if (!g_CertInfo.active)
+	if (0 /* cert removed */)
 		COptionsWindow__AddCertIcon(ui.chkRamBox, true);
-	if (!g_CertInfo.opt_enc) {
+	if (0) { // cert check removed
 		COptionsWindow__AddCertIcon(ui.chkConfidential, true);
 		COptionsWindow__AddCertIcon(ui.chkEncrypt, true);
 		COptionsWindow__AddCertIcon(ui.chkAllowEfs, true);
@@ -114,7 +114,7 @@ void COptionsWindow::CreateGeneral()
 	connect(ui.chkNoSecurityIsolation, SIGNAL(clicked(bool)), this, SLOT(UpdateBoxType()));
 	//connect(ui.chkNoSecurityFiltering, SIGNAL(clicked(bool)), this, SLOT(UpdateBoxType()));
 
-	
+
 	ui.btnBorderColor->setPopupMode(QToolButton::MenuButtonPopup);
 	ui.btnBorderColor->setStyle(QStyleFactory::create("Fusion"));
 	QMenu* pColorMenu = new QMenu(this);
@@ -176,7 +176,7 @@ void COptionsWindow::CreateGeneral()
 	connect(ui.chkFakeElevation, SIGNAL(clicked(bool)), this, SLOT(OnGeneralChanged()));
 	connect(ui.chkMsiExemptions, SIGNAL(clicked(bool)), this, SLOT(OnGeneralChanged()));
 	connect(ui.chkACLs, SIGNAL(clicked(bool)), this, SLOT(OnGeneralChanged()));
-	
+
 	connect(ui.chkBlockSpooler, SIGNAL(clicked(bool)), this, SLOT(OnGeneralChanged()));
 	connect(ui.chkOpenSpooler, SIGNAL(clicked(bool)), this, SLOT(OnGeneralChanged()));
 	connect(ui.chkPrintToFile, SIGNAL(clicked(bool)), this, SLOT(OnGeneralChanged()));
@@ -247,7 +247,7 @@ void COptionsWindow::CreateGeneral()
 
 	connect(ui.chkRawDiskRead, SIGNAL(clicked(bool)), this, SLOT(OnGeneralChanged()));
 	connect(ui.chkRawDiskNotify, SIGNAL(clicked(bool)), this, SLOT(OnGeneralChanged()));
-	
+
 	connect(ui.chkAllowEfs, SIGNAL(clicked(bool)), this, SLOT(OnGeneralChanged()));
 
 	connect(ui.btnAddCmd, SIGNAL(clicked(bool)), this, SLOT(OnAddCommand()));
@@ -298,11 +298,11 @@ void COptionsWindow::LoadGeneral()
 
 	ui.chkShowForRun->setChecked(m_pBox->GetBool("ShowForRunIn", true));
 	ui.chkPinToTray->setChecked(m_pBox->GetBool("PinToTray", false));
-	
+
 	ui.chkSecurityMode->setChecked(m_pBox->GetBool("UseSecurityMode", false));
 	ui.chkLockDown->setChecked(m_pBox->GetBool("SysCallLockDown", false));
 	ui.chkRestrictDevices->setChecked(m_pBox->GetBool("RestrictDevices", false));
-		
+
 	ui.chkDropRights->setChecked(m_pBox->GetBool("DropAdminRights", false));
 	ui.chkFakeElevation->setChecked(m_pBox->GetBool("FakeAdminRights", false));
 	ui.chkMsiExemptions->setChecked(m_pBox->GetBool("MsiInstallerExemptions", false));
@@ -339,7 +339,7 @@ void COptionsWindow::LoadGeneral()
 		pos = 0;
 	else if (Action.left(1) == "!")
 		pos = ui.cmbDblClick->findData(Action);
-	else if (!Action.isEmpty()) 
+	else if (!Action.isEmpty())
 		pos = ui.cmbDblClick->findText(Action);
 	ui.cmbDblClick->setCurrentIndex(pos);
 	if (pos == -1) ui.cmbDblClick->setCurrentText(Action);
@@ -370,7 +370,7 @@ void COptionsWindow::LoadGeneral()
 	ui.chkForceProtection->setEnabled(ui.chkEncrypt->isEnabled() && ui.chkEncrypt->isChecked());
 
 	auto pBoxEx = m_pBox.objectCast<CSandBoxPlus>();
-	if (pBoxEx && QFile::exists(pBoxEx->GetBoxImagePath())) 
+	if (pBoxEx && QFile::exists(pBoxEx->GetBoxImagePath()))
 	{
 		if (!ui.btnPassword->menu()) {
 			QMenu* pCryptoMenu = new QMenu();
@@ -390,7 +390,7 @@ void COptionsWindow::LoadGeneral()
 	ui.chkNoCopyWarn->setChecked(!m_pBox->GetBool("CopyLimitSilent", false));
 	ui.chkDenyWrite->setChecked(!m_pBox->GetBool("CopyBlockDenyWrite", false));
 	ui.chkNoCopyMsg->setChecked(m_pBox->GetBool("NotifyNoCopy", false));
-	
+
 	LoadCopyRules();
 
 	if (m_pBox->GetBool("NeverDelete", false))
@@ -493,7 +493,7 @@ void COptionsWindow::SaveGeneral()
 		m_pBox->AppendText("RunCommand", Value);
 
 
-	if (ui.cmbVersion->isEnabled()) 
+	if (ui.cmbVersion->isEnabled())
 	{
 		if (ui.cmbVersion->currentIndex() == 1) // V2
 		{
@@ -643,7 +643,7 @@ void COptionsWindow::ParseAndAddCopyRule(const QString& Value, ECopyAction Actio
 		Program = Values[0];
 		Pattern = Values[1];
 	}
-	else 
+	else
 		Pattern = Values[0];
 
 	// todo this block is also used by access move this to an own function
@@ -684,7 +684,7 @@ void COptionsWindow::SaveCopyRules()
 		ECopyAction Action = (ECopyAction)pItem->data(0, Qt::UserRole).toInt();
 		QString Program = pItem->data(1, Qt::UserRole).toString();
 		QString Pattern = pItem->text(2);
-		
+
 		if (!Program.isEmpty())
 			Pattern.prepend(Program + ",");
 
@@ -730,7 +730,7 @@ void COptionsWindow::OnCopyItemDoubleClicked(QTreeWidgetItem* pItem, int Column)
 
 	QString Program = pItem->data(1, Qt::UserRole).toString();
 
-	// todo: 
+	// todo:
 	QWidget* pProgram = new QWidget();
 	pProgram->setAutoFillBackground(true);
 	QHBoxLayout* pLayout = new QHBoxLayout();
@@ -816,7 +816,7 @@ void COptionsWindow::CloseCopyEdit(QTreeWidgetItem* pItem, bool bSave)
 		pItem->setData(1, Qt::UserRole, (pNot->isChecked() ? "!" : "") + Program);
 
 		pItem->setText(2, pPattern->text());
-		
+
 		m_CopyRulesChanged = true;
 		OnOptChanged();
 	}
@@ -828,7 +828,7 @@ void COptionsWindow::CloseCopyEdit(QTreeWidgetItem* pItem, bool bSave)
 void COptionsWindow::OnAddCopyRule()
 {
 	ParseAndAddCopyRule("", eCopyAlways);
-	
+
 	m_CopyRulesChanged = true;
 	OnOptChanged();
 }
@@ -892,14 +892,14 @@ void COptionsWindow::UpdateBoxSecurity()
 void COptionsWindow::OnSecurityMode()
 {
 	if (ui.chkSecurityMode->isChecked() || (ui.chkLockDown->isEnabled() && ui.chkLockDown->isChecked()) || (ui.chkRestrictDevices->isEnabled() && ui.chkRestrictDevices->isChecked()))
-		theGUI->CheckCertificate(this, 0);
+		/* theGUI->CheckCertificate(this, 0); // removed */
 
 	UpdateBoxSecurity();
 
 	if (sender() == ui.chkSecurityMode && !ui.chkSecurityMode->isChecked()) {
 		ui.chkLockDown->setChecked(m_pBox->GetBool("SysCallLockDown", false));
 		ui.chkRestrictDevices->setChecked(m_pBox->GetBool("RestrictDevices", false));
-		
+
 		ui.chkDropRights->setChecked(m_pBox->GetBool("DropAdminRights", false));
 	}
 
@@ -1055,7 +1055,7 @@ void COptionsWindow::OnBrowsePath()
 		return;
 
 	auto pBoxEx = m_pBox.objectCast<CSandBoxPlus>();
-	
+
 	QVariantMap Entry;
 	Entry["Name"] = Name;
 	Entry["Command"] = (pBoxEx ? pBoxEx->MakeBoxCommand(Value) : Value);
@@ -1122,11 +1122,11 @@ void COptionsWindow::UpdateBoxType()
 	bool bAppBox = ui.chkNoSecurityIsolation->isChecked();
 
 	int BoxType;
-	if (bAppBox) 
+	if (bAppBox)
 		BoxType = bPrivacyMode ? (int)CSandBoxPlus::eAppBoxPlus : (int)CSandBoxPlus::eAppBox;
-	else if (bSecurityMode) 
+	else if (bSecurityMode)
 		BoxType = bPrivacyMode ? (int)CSandBoxPlus::eHardenedPlus : (int)CSandBoxPlus::eHardened;
-	else 
+	else
 		BoxType = bPrivacyMode ? (int)CSandBoxPlus::eDefaultPlus : (int)CSandBoxPlus::eDefault;
 
 	ui.lblBoxInfo->setText(theGUI->GetBoxDescription(BoxType));
@@ -1203,7 +1203,7 @@ void COptionsWindow::OnDiskChanged()
 {
 	if (sender() == ui.chkEncrypt) {
 		if (ui.chkEncrypt->isChecked())
-			theGUI->CheckCertificate(this, 1);
+			/* theGUI->CheckCertificate(this, 1); // removed */
 	}
 
 	if (ui.chkRamBox->isChecked()) {
@@ -1218,7 +1218,7 @@ void COptionsWindow::OnDiskChanged()
 		ui.btnPassword->setEnabled(ui.chkEncrypt->isChecked() && pBoxEx && pBoxEx->GetMountRoot().isEmpty());
 		ui.chkForceProtection->setEnabled(ui.chkEncrypt->isChecked());
 	}
-	
+
 	ui.chkForceProtection->setEnabled(ui.chkEncrypt->isEnabled() && ui.chkEncrypt->isChecked());
 
 	OnGeneralChanged();

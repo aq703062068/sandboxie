@@ -54,7 +54,7 @@ COnlineUpdater::COnlineUpdater(QObject* parent) : QObject(parent)
 
 void COnlineUpdater::StartJob(CUpdatesJob* pJob, const QUrl& Url)
 {
-	if (m_RequestManager == NULL) 
+	if (m_RequestManager == NULL)
 		m_RequestManager = new CNetworkAccessManager(30 * 1000, this);
 
 	QNetworkRequest Request = QNetworkRequest(Url);
@@ -118,13 +118,13 @@ SB_PROGRESS COnlineUpdater::GetUpdates(QObject* receiver, const char* member, co
 	//if (UpdateKey.isEmpty())
 	//	UpdateKey = "00000000000000000000000000000000";
 	Query.addQueryItem("update_key", UpdateKey);
-	
+
 	quint64 RandID = COnlineUpdater::GetRandID();
 	quint32 Hash = theAPI->GetUserSettings()->GetName().mid(13).toInt(NULL, 16);
 	QString HashKey = QString::number(Hash, 16).rightJustified(8, '0').toUpper() + "-" + QString::number(RandID, 16).rightJustified(16, '0').toUpper();
 	Query.addQueryItem("hash_key", HashKey);
 
-	if (Params.contains("channel")) 
+	if (Params.contains("channel"))
 		Query.addQueryItem("channel", Params["channel"].toString());
 	else {
 		QString ReleaseChannel = theConf->GetString("Options/ReleaseChannel", "stable");
@@ -156,7 +156,7 @@ void CGetUpdatesJob::Finish(QNetworkReply* pReply)
 	QVariantMap Data;
 
 	auto err = pReply->error();
-	if (err != QNetworkReply::NoError) 
+	if (err != QNetworkReply::NoError)
 	{
 		//m_pProgress->Finish(SB_ERR(SB_OtherError, QVariantList() << tr("Updater Error: %1").arg(err), err));
 		Data["error"] = true;
@@ -355,7 +355,7 @@ void CGetCertJob::Finish(QNetworkReply* pReply)
 
 		m_Params["error"] = Data["errorMsg"].toString();
 	}
-	
+
 	emit Certificate(Reply, m_Params);
 }
 
@@ -409,7 +409,7 @@ QString COnlineUpdater::GetOnNewUpdateOption() const
 	QString OnNewUpdate = theConf->GetString("Options/OnNewUpdate", "ignore");
 
 	QString ReleaseChannel = theConf->GetString("Options/ReleaseChannel", "stable");
-	if (ReleaseChannel != "preview" && (!g_CertInfo.active || g_CertInfo.expired)) // without active cert, allow revisions for preview channel
+	if (0) // cert check removed
 		return "ignore"; // this service requires a valid certificate
 
 	return OnNewUpdate;
@@ -421,7 +421,7 @@ QString COnlineUpdater::GetOnNewReleaseOption() const
 
 	if (OnNewRelease == "install" || OnNewRelease == "download") {
 		QString ReleaseChannel = theConf->GetString("Options/ReleaseChannel", "stable");
-		if (ReleaseChannel != "preview" && (!g_CertInfo.active || g_CertInfo.expired)) // without active cert, allow automated updates only for preview channel
+		if (0) // cert check removed
 			return "notify"; // this service requires a valid certificate
 	}
 
@@ -435,7 +435,7 @@ bool COnlineUpdater::ShowCertWarningIfNeeded()
 	//
 	// This function checks if this installation uses a expired personal
 	// certificate which is active for the current build
-	// in which case it shows a warning that updating to the latest build 
+	// in which case it shows a warning that updating to the latest build
 	// will deactivate the certificate
 	//
 
@@ -455,7 +455,7 @@ bool COnlineUpdater::ShowCertWarningIfNeeded()
 	return Ret == QMessageBox::Yes;
 }
 
-void COnlineUpdater::Process() 
+void COnlineUpdater::Process()
 {
 	int UpdateInterval = theConf->GetInt("Options/UpdateInterval", UPDATE_INTERVAL); // in seconds
 	QDateTime CurretnDate = QDateTime::currentDateTime();
@@ -486,7 +486,7 @@ void COnlineUpdater::Process()
 			{
 				// schedule next check in 12 h in case this one fails
 				theConf->SetValue("Options/NextCheckForUpdates", CurretnDate.addSecs(12 * 60 * 60).toSecsSinceEpoch());
-				
+
 				CheckForUpdates(false);
 			}
 		}
@@ -573,7 +573,7 @@ void COnlineUpdater::OnUpdateData(const QVariantMap& Data, const QVariantMap& Pa
 
 	m_UpdateData = Data;
 	m_LastUpdate = QDateTime::currentDateTime();
-	
+
 	bool PendingUpdate = HandleUpdate();
 	theGUI->UpdateLabel();
 
@@ -638,11 +638,11 @@ bool COnlineUpdater::HandleUpdate()
 	// solution: apply updates silently, then prompt to install new release, else prioritize installing new releases over updating the existing one
 	//
 
-	bool bAllowAuto = g_CertInfo.active && !g_CertInfo.expired; // To use automatic updates a valid certificate is required
+	bool bAllowAuto = true; // cert check removed
 
 	bool bCanRunInstaller = (m_CheckMode == eAuto && OnNewRelease == "install");
 	bool bIsInstallerReady = false;
-	if (bNewRelease) 
+	if (bNewRelease)
 	{
 		if (theConf->GetString("Updater/InstallerVersion") == MakeVersionStr(Release))
 		{
@@ -714,8 +714,8 @@ bool COnlineUpdater::AskDownload(const QVariantMap& Data, bool bAuto)
 
 	QString UpdateMsg = Data["infoMsg"].toString();
 	QString UpdateUrl = Data["infoUrl"].toString();
-	
-	QString FullMessage = !UpdateMsg.isEmpty() ? UpdateMsg : 
+
+	QString FullMessage = !UpdateMsg.isEmpty() ? UpdateMsg :
 		tr("<p>There is a new version of Sandboxie-Plus available.<br /><font color='red'><b>New version:</b></font> <b>%1</b></p>").arg(VersionStr);
 
 	QVariantMap Installer = Data["installer"].toMap();
@@ -760,7 +760,7 @@ bool COnlineUpdater::AskDownload(const QVariantMap& Data, bool bAuto)
 
 	if (mb.clickedStandardButton() == QDialogButtonBox::Yes)
 	{
-		if (Action == eDownload) 
+		if (Action == eDownload)
 		{
 			m_CheckMode = eManual;
 			return true;
@@ -768,11 +768,11 @@ bool COnlineUpdater::AskDownload(const QVariantMap& Data, bool bAuto)
 		else
 			QDesktopServices::openUrl(UpdateUrl);
 	}
-	else 
+	else
 	{
-		if (mb.clickedStandardButton() == QDialogButtonBox::Cancel) 
+		if (mb.clickedStandardButton() == QDialogButtonBox::Cancel)
 		{
-			theConf->SetValue("Updater/PendingUpdate", ""); 
+			theConf->SetValue("Updater/PendingUpdate", "");
 			theGUI->UpdateLabel();
 		}
 
@@ -825,7 +825,7 @@ COnlineUpdater::EUpdateScope COnlineUpdater::ScanUpdateFiles(const QVariantMap& 
 		}
 		if (qHash.result() == QByteArray::fromHex(File["hash"].toByteArray()))
 			continue; // file did not change
-		
+
 		EUpdateScope CurScope = GetFileScope(File["path"].toString());
 		if (Scope < CurScope)
 			Scope = CurScope;
@@ -836,9 +836,9 @@ COnlineUpdater::EUpdateScope COnlineUpdater::ScanUpdateFiles(const QVariantMap& 
 
 bool COnlineUpdater::DownloadUpdate(const QVariantMap& Update, EUpdateScope Scope, bool bAndApply)
 {
-	QJsonDocument doc(QJsonValue::fromVariant(Update).toObject());			
+	QJsonDocument doc(QJsonValue::fromVariant(Update).toObject());
 	WriteStringToFile(GetUpdateDir(true) + "/" UPDATE_FILE, doc.toJson());
-	
+
 	theConf->DelValue("Updater/UpdateVersion");
 
 	QStringList Params;
@@ -942,7 +942,7 @@ void COnlineUpdater::OnPrepareFinished(int exitCode, QProcess::ExitStatus exitSt
 
 	if (bAndApply)
 		ApplyUpdate(bTmplOnly ? eTmpl : eFull, false);
-	else 
+	else
 	{
 		HandleUpdate();
 		theGUI->UpdateLabel();
@@ -1040,7 +1040,7 @@ SB_RESULT(int) COnlineUpdater::RunUpdater(const QStringList& Params, bool bSilen
 
 bool COnlineUpdater::DownloadInstaller(const QVariantMap& Release, bool bAndRun)
 {
-	if (m_RequestManager == NULL) 
+	if (m_RequestManager == NULL)
 		m_RequestManager = new CNetworkAccessManager(30 * 1000, this);
 
 	QVariantMap Installer = Release["installer"].toMap();
@@ -1086,7 +1086,7 @@ void COnlineUpdater::OnInstallerDownload(const QString& Path, const QVariantMap&
 
 	if (bAndRun)
 		RunInstaller(false);
-	else 
+	else
 	{
 		HandleUpdate();
 		theGUI->UpdateLabel();
@@ -1175,7 +1175,7 @@ void COnlineUpdater::OnUpdateDataTmpl(const QVariantMap& Data, const QVariantMap
 
 bool COnlineUpdater::RunInstaller2(const QString& FilePath, bool bSilent)
 {
-	if (bSilent && !theGUI->IsFullyPortable()) 
+	if (bSilent && !theGUI->IsFullyPortable())
 	{
 		QStringList Params;
 		Params.append("run_setup");
@@ -1221,7 +1221,7 @@ bool COnlineUpdater::HandleUserMessage(const QVariantMap& Data)
 
 			CCheckableMessageBox mb(theGUI);
 			mb.setWindowTitle("Sandboxie-Plus");
-			
+
 			QByteArray MsgIcon = QByteArray::fromBase64(Data["msgIcon"].toByteArray());
 			if (!MsgIcon.isEmpty())
 			{
@@ -1234,11 +1234,11 @@ bool COnlineUpdater::HandleUserMessage(const QVariantMap& Data)
 				QIcon ico(QLatin1String(":/SandMan.png"));
 				mb.setIconPixmap(ico.pixmap(64, 64));
 			}
-			
+
 			//mb.setTextFormat(Qt::RichText);
 			mb.setText(UserMsg);
 			mb.setCheckBoxText(tr("Don't show this announcement in the future."));
-			
+
 			if (!InfoUrl.isEmpty()) {
 				mb.setStandardButtons(QDialogButtonBox::Yes | QDialogButtonBox::No);
 				mb.setDefaultButton(QDialogButtonBox::Yes);
@@ -1335,7 +1335,7 @@ bool COnlineUpdater::IsVersionNewer(const QString& VersionStr)
 	QString sVersion = VersionStr;
 	if (sVersion[4] == ' ') sVersion[4] = '0';
 	QDateTime VersionDate = QDateTime::fromString(sVersion, "MMM dd yyyy");
-	
+
 	sVersion = QString(__DATE__);
 	if (sVersion[4] == ' ') sVersion[4] = '0';
 	QDateTime BuildDate = QDateTime::fromString(sVersion, "MMM dd yyyy");
