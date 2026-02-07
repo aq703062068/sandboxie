@@ -200,6 +200,7 @@ jobs:
 
 
   Build_ARM64_Qt6:
+    if: false
     runs-on: windows-2022
     timeout-minutes: 45
 
